@@ -5,9 +5,11 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { Employee } from '../../types/types';
 import { EmployeeService } from '../../services/employee.service';
+import { EmployeeDialog } from './employee-dialog/employee-dialog';
 
 const PLACEHOLDER_EMPLOYEES: Employee[] = [
   { id: 1, firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@company.com' },
@@ -33,6 +35,8 @@ const PLACEHOLDER_EMPLOYEES: Employee[] = [
     MatSortModule,
     MatButtonModule,
     MatPaginatorModule,
+    MatDialogModule,
+    EmployeeDialog,
   ],
   templateUrl: './employees.html',
   styleUrls: ['./employees.css'],
@@ -51,7 +55,10 @@ export class Employees implements AfterViewInit, OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private employeeService: EmployeeService) {}
+  constructor(
+    private employeeService: EmployeeService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.dataSource.data = PLACEHOLDER_EMPLOYEES; // tmp - swap when backend is ready
@@ -65,13 +72,47 @@ export class Employees implements AfterViewInit, OnInit {
   /* ================= CRUD ================= */
 
   openCreateDialog() {
-    // TODO: open create dialog when form is ready
-    console.log('Create employee - coming soon');
+    const dialogRef = this.dialog.open(EmployeeDialog, {
+      width: '650px',
+      disableClose: true,
+      data: null
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.employeeService.create(result).subscribe({
+          next: (created) => {
+            this.dataSource.data = [...this.dataSource.data, created];
+          },
+          error: (err) => {
+            console.error('Failed to create employee', err);
+          }
+        });
+      }
+    });
   }
 
   openUpdateDialog(employee: Employee) {
-    // TODO: open update dialog when form is ready
-    console.log('Update employee - coming soon', employee);
+    const dialogRef = this.dialog.open(EmployeeDialog, {
+      width: '650px',
+      disableClose: true,
+      data: { ...employee }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.employeeService.update(result.id, result).subscribe({
+          next: (updated) => {
+            this.dataSource.data = this.dataSource.data.map(item =>
+              item.id === updated.id ? updated : item
+            );
+          },
+          error: (err) => {
+            console.error('Failed to update employee', err);
+          }
+        });
+      }
+    });
   }
 
   deleteEmployee(employee: Employee) {
