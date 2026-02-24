@@ -14,7 +14,43 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Incident } from '../../types/types';
+import { IncidentService } from '../../services/incident.service';
 
+
+
+
+const PLACEHOLDER_INCIDENTS: Incident[] = [
+  {
+    id: 1,
+    reporter: 'Alice Johnson',
+    description: 'Device overheating during operation',
+    serialNumber: 'RX200-8891',
+    deviceType: 'Router',
+    date: new Date('2026-02-10'),
+    severity: 'High',
+    status: 'Open'
+  },
+  {
+    id: 2,
+    reporter: 'Mark Stevens',
+    description: 'Screen flickering intermittently',
+    serialNumber: 'MP24-3344',
+    deviceType: 'Monitor',
+    date: new Date('2026-02-14'),
+    severity: 'Medium',
+    status: 'In Progress'
+  },
+  {
+    id: 3,
+    reporter: 'Sophia Lee',
+    description: 'Battery draining too quickly',
+    serialNumber: 'TZ10-9901',
+    deviceType: 'Tablet',
+    date: new Date('2026-02-18'),
+    severity: 'Low',
+    status: 'Resolved'
+  }
+];
 
 @Component({
   selector: 'app-incidents',
@@ -37,6 +73,8 @@ import { Incident } from '../../types/types';
   styleUrls: ['./incidents.css'],
 })
 export class Incidents implements AfterViewInit, OnInit {
+  //placeholders
+  
 
   displayedColumns: string[] = [
     'reporter',
@@ -63,57 +101,44 @@ export class Incidents implements AfterViewInit, OnInit {
     serialNumber: string;
     deviceType: string;
   } = {
-    date: this.getYesterday(), // default on load
+    date: this.getYesterday(),
     serialNumber: '',
     deviceType: ''
   };
 
-  dataSource = new MatTableDataSource<Incident>([
-    {
-      id: 1,
-      reporter: 'Alice Johnson',
-      description: 'Device overheating during operation',
-      serialNumber: 'RX200-8891',
-      deviceType: 'Router',
-      date: new Date('2026-02-10'),
-      severity: 'High',
-      status: 'Open'
-    },
-    {
-      id: 2,
-      reporter: 'Mark Stevens',
-      description: 'Screen flickering intermittently',
-      serialNumber: 'MP24-3344',
-      deviceType: 'Monitor',
-      date: new Date('2026-02-14'),
-      severity: 'Medium',
-      status: 'In Progress'
-    },
-    {
-      id: 3,
-      reporter: 'Sophia Lee',
-      description: 'Battery draining too quickly',
-      serialNumber: 'TZ10-9901',
-      deviceType: 'Tablet',
-      date: new Date('2026-02-18'),
-      severity: 'Low',
-      status: 'Resolved'
-    }
-  ]);
-
-  private nextId = 4;
+  dataSource = new MatTableDataSource<Incident>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private dialog: MatDialog) {}
+  constructor(
+    private dialog: MatDialog,
+    private incidentService: IncidentService
+  ) {}
 
   ngOnInit() {
     this.initializeFilter();
-    this.applyFilters(); // apply yesterday filter on load
+    //this.loadIncidents();
+    this.dataSource.data = PLACEHOLDER_INCIDENTS; // tmp
+    this.applyFilters(); // apply yesterday filter on init
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+  }
+
+  /* ================= LOAD ================= */
+
+  private loadIncidents() {
+    this.incidentService.getAll().subscribe({
+      next: (incidents) => {
+        this.dataSource.data = incidents;
+        this.dataSource.data = PLACEHOLDER_INCIDENTS; // tmp 
+        this.applyFilters(); // apply yesterday filter after data loads
+      },
+      error: (err) => {
+        console.error('Failed to load incidents', err);
+      }
+    });
   }
 
   /* ================= FILTER LOGIC ================= */
@@ -147,11 +172,9 @@ export class Incidents implements AfterViewInit, OnInit {
     this.dataSource.filter = JSON.stringify(this.filterValues);
   }
 
-  /* ===== CLEAR = REMOVE DATE FILTER COMPLETELY ===== */
-
   clearFilters() {
     this.filterValues = {
-      date: null,            // no date filtering
+      date: null,
       serialNumber: '',
       deviceType: ''
     };
@@ -170,13 +193,15 @@ export class Incidents implements AfterViewInit, OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const newIncident: Incident = {
-          ...result,
-          id: this.nextId++
-        };
-
-        this.dataSource.data = [...this.dataSource.data, newIncident];
-        this.applyFilters();
+        this.incidentService.create(result).subscribe({
+          next: (created) => {
+            this.dataSource.data = [...this.dataSource.data, created];
+            this.applyFilters();
+          },
+          error: (err) => {
+            console.error('Failed to create incident', err);
+          }
+        });
       }
     });
   }
@@ -190,11 +215,17 @@ export class Incidents implements AfterViewInit, OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.dataSource.data = this.dataSource.data.map(item =>
-          item.id === result.id ? result : item
-        );
-
-        this.applyFilters();
+        this.incidentService.update(result.id, result).subscribe({
+          next: (updated) => {
+            this.dataSource.data = this.dataSource.data.map(item =>
+              item.id === updated.id ? updated : item
+            );
+            this.applyFilters();
+          },
+          error: (err) => {
+            console.error('Failed to update incident', err);
+          }
+        });
       }
     });
   }
@@ -203,11 +234,17 @@ export class Incidents implements AfterViewInit, OnInit {
     const confirmed = confirm('Are you sure you want to delete this incident?');
 
     if (confirmed) {
-      this.dataSource.data = this.dataSource.data.filter(
-        item => item.id !== incident.id
-      );
-
-      this.applyFilters();
+      this.incidentService.delete(incident.id).subscribe({
+        next: () => {
+          this.dataSource.data = this.dataSource.data.filter(
+            item => item.id !== incident.id
+          );
+          this.applyFilters();
+        },
+        error: (err) => {
+          console.error('Failed to delete incident', err);
+        }
+      });
     }
   }
 }

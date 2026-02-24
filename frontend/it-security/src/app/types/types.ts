@@ -10,8 +10,16 @@ export interface Incident {
 }
 
 export interface Device {
+  id: number;
   deviceType: string;
   model: string;
   serialNumber: string;
-  assignmentDate: Date;
+  assignedEmployee: string;
+}
+
+export interface Employee {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
 }

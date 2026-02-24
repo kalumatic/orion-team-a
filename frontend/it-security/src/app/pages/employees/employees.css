@@ -2,7 +2,7 @@
    PAGE CONTAINER
 ========================================= */
 
-.device-container {
+.employee-container {
   padding: 40px;
   background: #f8fafc;
   min-height: 100vh;
@@ -71,6 +71,16 @@ table {
 }
 
 /* =========================================
+   PAGINATOR
+========================================= */
+
+.paginator-wrapper {
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* =========================================
    ACTION BUTTONS
 ========================================= */
 
@@ -80,7 +90,6 @@ table {
   justify-content: flex-end;
 }
 
-.reassign-btn,
 .update-btn,
 .delete-btn {
   height: 34px;
