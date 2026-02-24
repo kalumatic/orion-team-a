@@ -6,6 +6,8 @@ import com.example.demo.entity.Device;
 import com.example.demo.entity.Employee;
 import com.example.demo.repository.DeviceRepository;
 import com.example.demo.repository.EmployeeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -72,5 +74,11 @@ public class DeviceServiceImpl implements DeviceService {
         Device saved = deviceRepository.save(device);
 
         return new DeviceResponseDTO(saved);
+    }
+
+    @Override
+    public Page<DeviceResponseDTO> getAllDevices(Pageable pageable) {
+        Page<Device> devices = deviceRepository.findAll(pageable);
+        return devices.map(DeviceResponseDTO::new);
     }
 }
