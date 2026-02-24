@@ -2,10 +2,7 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "devices")
@@ -13,6 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Device {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +20,8 @@ public class Device {
     private String deviceType;
 
     private String model;
+
+    @Column(unique = true)
     private String serialNumber;
 
     @ManyToOne
