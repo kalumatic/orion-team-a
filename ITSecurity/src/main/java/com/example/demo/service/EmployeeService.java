@@ -3,6 +3,9 @@ package com.example.demo.service;
 import com.example.demo.dto.request.CreateEmployeeRequest;
 import com.example.demo.dto.response.EmployeeResponse;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 /**
  * Service contract for Employee-related business operations.
  * Defines methods that encapsulate business rules and coordinate persistence via repositories.
@@ -10,4 +13,5 @@ import com.example.demo.dto.response.EmployeeResponse;
 
 public interface EmployeeService {
     EmployeeResponse createEmployee(CreateEmployeeRequest request);
+    Page<EmployeeResponse> getEmployees(Pageable pageable);
 }

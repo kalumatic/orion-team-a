@@ -9,6 +9,9 @@ import com.example.demo.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 /**
  * EmployeeService implementation.
  * Handles Employee creation logic, including duplicate email checks and persistence via EmployeeRepository.
@@ -41,5 +44,16 @@ public class EmployeeServiceImpl implements EmployeeService {
                 saved.getLastName(),
                 saved.getEmail()
         );
+    }
+
+    @Override
+    public Page<EmployeeResponse> getEmployees(Pageable pageable) {
+        return employeeRepository.findAll(pageable)
+                .map(e -> new EmployeeResponse(
+                        e.getId(),
+                        e.getFirstName(),
+                        e.getLastName(),
+                        e.getEmail()
+                ));
     }
 }

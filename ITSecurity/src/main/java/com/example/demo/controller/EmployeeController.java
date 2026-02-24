@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 /**
  * REST controller for Employee resources.
  * Exposes HTTP endpoints for creating employees and delegates business logic to EmployeeService.
@@ -25,5 +28,10 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.CREATED)
     public EmployeeResponse create(@Valid @RequestBody CreateEmployeeRequest request) {
         return employeeService.createEmployee(request);
+    }
+
+    @GetMapping
+    public Page<EmployeeResponse> getAll(Pageable pageable) {
+        return employeeService.getEmployees(pageable);
     }
 }
