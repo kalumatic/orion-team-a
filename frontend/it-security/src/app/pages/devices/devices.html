@@ -1,0 +1,53 @@
+<div class="device-container">
+
+  <h2>Device Tracking</h2>
+
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2">
+
+    <!-- Device Type -->
+    <ng-container matColumnDef="deviceType">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Device Type
+      </th>
+      <td mat-cell *matCellDef="let device">
+        {{ device.deviceType }}
+      </td>
+    </ng-container>
+
+    <!-- Model -->
+    <ng-container matColumnDef="model">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Model
+      </th>
+      <td mat-cell *matCellDef="let device">
+        {{ device.model }}
+      </td>
+    </ng-container>
+
+    <!-- Serial Number -->
+    <ng-container matColumnDef="serialNumber">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Serial Number
+      </th>
+      <td mat-cell *matCellDef="let device">
+        {{ device.serialNumber }}
+      </td>
+    </ng-container>
+
+    <!-- Assignment Date -->
+    <ng-container matColumnDef="assignmentDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Assignment Date
+      </th>
+      <td mat-cell *matCellDef="let device">
+        {{ device.assignmentDate | date:'mediumDate' }}
+      </td>
+    </ng-container>
+
+    <!-- Header & Row -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+  </table>
+
+</div>

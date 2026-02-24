@@ -1,0 +1,30 @@
+/* Grid layout */
+.dialog-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  padding-top: 8px;
+}
+
+/* Full width fields */
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Remove rounded corners everywhere */
+.mat-mdc-form-field,
+.mat-mdc-button,
+.mat-mdc-dialog-container {
+  border-radius: 0 !important;
+}
+
+/* Clean dialog title */
+h2 {
+  margin: 0;
+  padding-bottom: 8px;
+}
+
+/* Tighten dialog spacing */
+.mat-mdc-dialog-content {
+  padding-top: 8px;
+}

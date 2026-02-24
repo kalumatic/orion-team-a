@@ -1,0 +1,71 @@
+<div class="incident-container">
+
+  <div class="header-row">
+    <h2>Incident Tracking</h2>
+
+    <button mat-flat-button color="primary" (click)="openCreateDialog()">
+      CREATE INCIDENT
+    </button>
+  </div>
+
+  <!-- Table -->
+  <table mat-table [dataSource]="dataSource" matSort>
+
+    <!-- Reporter -->
+    <ng-container matColumnDef="reporter">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Reporter</th>
+      <td mat-cell *matCellDef="let incident">
+        {{ incident.reporter }}
+      </td>
+    </ng-container>
+
+    <!-- Description -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef>Description</th>
+      <td mat-cell *matCellDef="let incident">
+        {{ incident.description }}
+      </td>
+    </ng-container>
+
+    <!-- Device -->
+    <ng-container matColumnDef="device">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Device</th>
+      <td mat-cell *matCellDef="let incident">
+        {{ incident.device }}
+      </td>
+    </ng-container>
+
+    <!-- Date -->
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+      <td mat-cell *matCellDef="let incident">
+        {{ incident.date | date:'mediumDate' }}
+      </td>
+    </ng-container>
+
+    <!-- Severity -->
+    <ng-container matColumnDef="severity">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Severity</th>
+      <td mat-cell *matCellDef="let incident">
+        <mat-chip class="sharp-chip">
+          {{ incident.severity }}
+        </mat-chip>
+      </td>
+    </ng-container>
+
+    <!-- Status -->
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+      <td mat-cell *matCellDef="let incident">
+        <mat-chip class="sharp-chip">
+          {{ incident.status }}
+        </mat-chip>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+  </table>
+
+</div>
