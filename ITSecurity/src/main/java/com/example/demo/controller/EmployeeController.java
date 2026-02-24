@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.example.demo.dto.request.UpdateEmployeeRequest;
+
 /**
  * REST controller for Employee resources.
  * Exposes HTTP endpoints for creating employees and delegates business logic to EmployeeService.
@@ -33,5 +35,10 @@ public class EmployeeController {
     @GetMapping
     public Page<EmployeeResponse> getAll(Pageable pageable) {
         return employeeService.getEmployees(pageable);
+    }
+
+    @PutMapping("/{id}")
+    public EmployeeResponse update(@PathVariable Long id, @Valid @RequestBody UpdateEmployeeRequest request) {
+        return employeeService.updateEmployee(id, request);
     }
 }

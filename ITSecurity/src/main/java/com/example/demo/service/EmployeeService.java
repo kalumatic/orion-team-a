@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.request.CreateEmployeeRequest;
+import com.example.demo.dto.request.UpdateEmployeeRequest;
 import com.example.demo.dto.response.EmployeeResponse;
 
 import org.springframework.data.domain.Page;
@@ -14,4 +15,5 @@ import org.springframework.data.domain.Pageable;
 public interface EmployeeService {
     EmployeeResponse createEmployee(CreateEmployeeRequest request);
     Page<EmployeeResponse> getEmployees(Pageable pageable);
+    EmployeeResponse updateEmployee(Long id, UpdateEmployeeRequest request);
 }

@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.example.demo.dto.request.UpdateEmployeeRequest;
+import com.example.demo.exception.ResourceNotFoundException;
+
 /**
  * EmployeeService implementation.
  * Handles Employee creation logic, including duplicate email checks and persistence via EmployeeRepository.
@@ -55,5 +58,29 @@ public class EmployeeServiceImpl implements EmployeeService {
                         e.getLastName(),
                         e.getEmail()
                 ));
+    }
+
+    @Override
+    public EmployeeResponse updateEmployee(Long id, UpdateEmployeeRequest request) {
+
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee with id " + id + " not found"));
+
+        if (employeeRepository.existsByEmailAndIdNot(request.getEmail(), id)) {
+            throw new DuplicateResourceException("Employee with this email already exists");
+        }
+
+        employee.setFirstName(request.getFirstName());
+        employee.setLastName(request.getLastName());
+        employee.setEmail(request.getEmail());
+
+        Employee saved = employeeRepository.save(employee);
+
+        return new EmployeeResponse(
+                saved.getId(),
+                saved.getFirstName(),
+                saved.getLastName(),
+                saved.getEmail()
+        );
     }
 }
