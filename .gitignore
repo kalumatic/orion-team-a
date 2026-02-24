@@ -1,3 +1,9 @@
 .idea/
 *.iml
 out
+
+ITSecurity/data/
+data/
+*.mv.db
+*.trace.db
+*.lock.db
