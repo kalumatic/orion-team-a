@@ -37,4 +37,10 @@ public class DeviceController {
         Page<DeviceResponseDTO> devices = service.getAllDevices(pageable);
         return ResponseEntity.ok(devices);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<DeviceResponseDTO> delete(@PathVariable Long id) {
+        DeviceResponseDTO response = service.deleteDevice(id);
+        return ResponseEntity.ok(response);
+    }
 }

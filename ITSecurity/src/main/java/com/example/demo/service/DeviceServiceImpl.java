@@ -34,6 +34,7 @@ public class DeviceServiceImpl implements DeviceService {
         device.setModel(dto.getModel());
         device.setSerialNumber(dto.getSerialNumber());
         device.setAssignedEmployee(employee);
+        device.setAssignmentDate(dto.getAssignmentDate());
 
         if (deviceRepository.findBySerialNumber(dto.getSerialNumber()).isPresent()) {
             throw new ResponseStatusException(
@@ -70,6 +71,7 @@ public class DeviceServiceImpl implements DeviceService {
         device.setModel(dto.getModel());
         device.setSerialNumber(dto.getSerialNumber());
         device.setAssignedEmployee(employee);
+        device.setAssignmentDate(dto.getAssignmentDate());
 
         Device saved = deviceRepository.save(device);
 
@@ -80,5 +82,15 @@ public class DeviceServiceImpl implements DeviceService {
     public Page<DeviceResponseDTO> getAllDevices(Pageable pageable) {
         Page<Device> devices = deviceRepository.findAll(pageable);
         return devices.map(DeviceResponseDTO::new);
+    }
+
+    @Override
+    public DeviceResponseDTO deleteDevice(Long id) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not found!"));
+
+        deviceRepository.delete(device);
+
+        return new DeviceResponseDTO(device);
     }
 }

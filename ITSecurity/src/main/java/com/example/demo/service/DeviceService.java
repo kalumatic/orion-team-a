@@ -9,4 +9,5 @@ public interface DeviceService {
     DeviceResponseDTO createDevice(DeviceRequestDTO request);
     DeviceResponseDTO updateDevice(Long id, DeviceRequestDTO request);
     Page<DeviceResponseDTO> getAllDevices(Pageable pageable);
+    DeviceResponseDTO deleteDevice(Long id);
 }

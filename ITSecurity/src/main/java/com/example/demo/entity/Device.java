@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "devices")
 @Getter
@@ -27,4 +29,6 @@ public class Device {
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee assignedEmployee;
+
+    private LocalDate assignmentDate;
 }
