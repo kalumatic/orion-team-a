@@ -46,4 +46,31 @@ public class DeviceServiceImpl implements DeviceService {
         // Map Device to DTO
         return new DeviceResponseDTO(saved);
     }
+
+    @Override
+    public DeviceResponseDTO updateDevice(Long id, DeviceRequestDTO dto) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not found!"));
+
+        Employee employee = employeeRepository.findById(dto.getAssignedEmployeeId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee not found!"));
+
+        if (!device.getSerialNumber().equals(dto.getSerialNumber())
+                && deviceRepository.findBySerialNumber(dto.getSerialNumber()).isPresent()) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Device with this serial number already exists!"
+            );
+        }
+
+        device.setDeviceType(dto.getDeviceType());
+        device.setModel(dto.getModel());
+        device.setSerialNumber(dto.getSerialNumber());
+        device.setAssignedEmployee(employee);
+
+        Device saved = deviceRepository.save(device);
+
+        return new DeviceResponseDTO(saved);
+    }
 }

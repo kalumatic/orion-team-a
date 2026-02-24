@@ -22,4 +22,10 @@ public class DeviceController {
         DeviceResponseDTO response = service.createDevice(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<DeviceResponseDTO> update(@PathVariable Long id, @Valid @RequestBody DeviceRequestDTO request) {
+        DeviceResponseDTO response = service.updateDevice(id, request);
+        return ResponseEntity.ok(response);
+    }
 }
