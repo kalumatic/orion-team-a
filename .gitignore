@@ -14,3 +14,6 @@ Release/
 # Logs & temp
 *.log
 *.tmp
+
+#intellij
+.idea
