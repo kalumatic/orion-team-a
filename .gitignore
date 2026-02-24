@@ -1,0 +1,21 @@
+
+# Visual Studio
+.vs/
+*.user
+*.VC.db
+
+# Build output
+x64/
+Debug/
+Release/
+*.exe
+*.obj
+*.pdb
+*.json
+
+# Logs & temp
+*.log
+*.tmp
+
+#intellij
+.idea
