@@ -1,0 +1,16 @@
+# Visual Studio
+.vs/
+*.user
+*.VC.db
+
+# Build output
+x64/
+Debug/
+Release/
+*.exe
+*.obj
+*.pdb
+
+# Logs & temp
+*.log
+*.tmp
