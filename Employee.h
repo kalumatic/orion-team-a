@@ -1,22 +1,28 @@
-//
-// Created by pemagenh on 2/24/2026.
-//
-
 #ifndef ORION_TEAM_A_EMPLOYEE_H
 #define ORION_TEAM_A_EMPLOYEE_H
 
-class Employee {
+
+#include <string>
+
+class Employee
+{
+private:
     std::string m_name;
     std::string m_lastName;
-    std::sting m_emailAddress;
+    std::string m_emailAddress;
 
-    public:
-    Employee(string name, string lastName, sting emailAddress);
+public:
+    Employee(const std::string& name,
+             const std::string& lastName,
+             const std::string& emailAddress);
     ~Employee();
 
-    bool verifyEmployee(string name, string lastName, string emailAddress);
-    void toJson();
-}
+    std::string toJson(const std::string& filename) const;
+
+private:
+    static bool isValidName(const std::string& name);
+    static bool isValidEmail(const std::string& email);
+};
 
 
 #endif //ORION_TEAM_A_EMPLOYEE_H
