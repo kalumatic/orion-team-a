@@ -9,13 +9,12 @@ class Employee
 private:
     std::string m_name;
     std::string m_lastName;
-    std::string m_emailAddress;
+    std::string m_email;
 
 public:
     Employee(const std::string& name,
              const std::string& lastName,
-             const std::string& emailAddress);
-    ~Employee();
+             const std::string& email);
 
     std::string toJson(const std::string& filename) const;
 
