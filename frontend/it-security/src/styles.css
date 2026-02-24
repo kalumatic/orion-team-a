@@ -17,3 +17,7 @@ app-root {
   height: calc(100vh - 64px); /* 64px = default toolbar height */
   overflow: auto;
 }
+
+/* .cdk-overlay-container {
+  z-index: 10000 !important;
+} */

@@ -4,12 +4,8 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 
-export interface Device {
-  deviceType: string;
-  model: string;
-  serialNumber: string;
-  assignmentDate: Date;
-}
+import { Device } from '../../types/types';
+
 
 const DEVICE_DATA: Device[] = [
   {

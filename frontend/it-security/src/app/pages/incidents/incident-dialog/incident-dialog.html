@@ -2,21 +2,63 @@
 
 <form [formGroup]="form" (ngSubmit)="save()" mat-dialog-content class="dialog-form">
 
-  <mat-form-field appearance="fill">
-    <mat-label>Reporter</mat-label>
-    <input matInput formControlName="reporter">
-    <mat-error *ngIf="form.get('reporter')?.hasError('required')">
+<mat-form-field appearance="fill">
+  <mat-label>Reporter</mat-label>
+  <input
+      type="text"
+      matInput
+      [matAutocomplete]="auto"
+      formControlName="reporter"
+  />
+
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayEmployee" panelClass="employee-autocomplete-panel">
+      <mat-option *ngFor="let employee of filteredEmployees$ | async"
+                  [value]="employee">
+      <div class="employee-option">
+          <strong>{{ employee.surname }} {{ employee.lastname }}</strong>
+          <small>{{ employee.email }}</small>
+      </div>
+      </mat-option>
+  </mat-autocomplete>
+
+  <mat-error *ngIf="form.get('reporter')?.hasError('required')">
       Reporter is required
-    </mat-error>
+  </mat-error>
   </mat-form-field>
 
-  <mat-form-field appearance="fill">
-    <mat-label>Device</mat-label>
-    <input matInput formControlName="device">
-    <mat-error *ngIf="form.get('device')?.hasError('required')">
-      Device is required
-    </mat-error>
-  </mat-form-field>
+<mat-form-field appearance="fill">
+  <mat-label>Device</mat-label>
+  <input
+    type="text"
+    matInput
+    [matAutocomplete]="deviceAuto"
+    formControlName="device"
+  />
+
+  <mat-autocomplete
+    #deviceAuto="matAutocomplete"
+    [displayWith]="displayDevice"
+    panelClass="device-autocomplete-panel">
+
+    <mat-option
+      *ngFor="let device of filteredDevices$ | async"
+      [value]="device">
+
+      <div class="device-option">
+        <strong>{{ device.deviceType }} - {{ device.model }}</strong>
+        <small>
+          SN: {{ device.serialNumber }} |
+          Assigned: {{ device.assignedEmployee }}
+        </small>
+      </div>
+
+    </mat-option>
+  </mat-autocomplete>
+
+  <mat-error *ngIf="form.get('device')?.hasError('required')">
+    Device is required
+  </mat-error>
+</mat-form-field>
 
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Description</mat-label>
@@ -28,9 +70,17 @@
 
   <mat-form-field appearance="fill">
     <mat-label>Date</mat-label>
-    <input matInput [matDatepicker]="picker" formControlName="date">
+    <input
+      matInput
+      [matDatepicker]="picker"
+      [max]="today"
+      formControlName="date"
+      readonly
+      (click)="picker.open()"
+    >
     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
+
     <mat-error *ngIf="form.get('date')?.hasError('required')">
       Date is required
     </mat-error>

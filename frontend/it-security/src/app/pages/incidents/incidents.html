@@ -1,71 +1,132 @@
 <div class="incident-container">
 
+  <!-- ================= HEADER ================= -->
   <div class="header-row">
-    <h2>Incident Tracking</h2>
+    <div class="title-section">
+      <h2>Incident Management</h2>
+      <div class="subtitle">
+        Monitor and manage reported device incidents
+      </div>
+    </div>
 
-    <button mat-flat-button color="primary" (click)="openCreateDialog()">
-      CREATE INCIDENT
+    <button mat-raised-button class="primary-btn" (click)="openCreateDialog()">
+      + New Incident
     </button>
   </div>
 
-  <!-- Table -->
-  <table mat-table [dataSource]="dataSource" matSort>
+  <!-- ================= FILTER BAR ================= -->
+  <div class="filter-bar">
 
-    <!-- Reporter -->
-    <ng-container matColumnDef="reporter">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Reporter</th>
-      <td mat-cell *matCellDef="let incident">
-        {{ incident.reporter }}
-      </td>
-    </ng-container>
+    <!-- DATE -->
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        [(ngModel)]="filterValues.date">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
 
-    <!-- Description -->
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef>Description</th>
-      <td mat-cell *matCellDef="let incident">
-        {{ incident.description }}
-      </td>
-    </ng-container>
+    <!-- DEVICE TYPE -->
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Device Type</mat-label>
+      <input
+        matInput
+        [(ngModel)]="filterValues.deviceType">
+    </mat-form-field>
 
-    <!-- Device -->
-    <ng-container matColumnDef="device">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Device</th>
-      <td mat-cell *matCellDef="let incident">
-        {{ incident.device }}
-      </td>
-    </ng-container>
+    <!-- SERIAL -->
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Serial</mat-label>
+      <input
+        matInput
+        [(ngModel)]="filterValues.serialNumber">
+    </mat-form-field>
 
-    <!-- Date -->
-    <ng-container matColumnDef="date">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-      <td mat-cell *matCellDef="let incident">
-        {{ incident.date | date:'mediumDate' }}
-      </td>
-    </ng-container>
+    <button mat-raised-button class="apply-btn" (click)="applyFilters()">
+      Apply
+    </button>
 
-    <!-- Severity -->
-    <ng-container matColumnDef="severity">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Severity</th>
-      <td mat-cell *matCellDef="let incident">
-        <mat-chip class="sharp-chip">
-          {{ incident.severity }}
-        </mat-chip>
-      </td>
-    </ng-container>
+    <button mat-stroked-button class="clear-btn" (click)="clearFilters()">
+      Clear
+    </button>
 
-    <!-- Status -->
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-      <td mat-cell *matCellDef="let incident">
-        <mat-chip class="sharp-chip">
-          {{ incident.status }}
-        </mat-chip>
-      </td>
-    </ng-container>
+  </div>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  <!-- ================= TABLE ================= -->
+  <div class="table-wrapper">
 
-  </table>
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <!-- Reporter -->
+      <ng-container matColumnDef="reporter">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Reporter</th>
+        <td mat-cell *matCellDef="let element">{{ element.reporter }}</td>
+      </ng-container>
+
+      <!-- Description -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+      </ng-container>
+
+      <!-- Serial -->
+      <ng-container matColumnDef="serialNumber">
+        <th mat-header-cell *matHeaderCellDef>Serial</th>
+        <td mat-cell *matCellDef="let element">{{ element.serialNumber }}</td>
+      </ng-container>
+
+      <!-- Device Type -->
+      <ng-container matColumnDef="deviceType">
+        <th mat-header-cell *matHeaderCellDef>Device Type</th>
+        <td mat-cell *matCellDef="let element">{{ element.deviceType }}</td>
+      </ng-container>
+
+      <!-- Date -->
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.date | date:'yyyy-MM-dd' }}
+        </td>
+      </ng-container>
+
+      <!-- Severity -->
+      <ng-container matColumnDef="severity">
+        <th mat-header-cell *matHeaderCellDef>Severity</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="severity-badge" [ngClass]="element.severity.toLowerCase()">
+            {{ element.severity }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Status -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let element">{{ element.status }}</td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <div class="action-buttons">
+            <button mat-button class="update-btn" (click)="openUpdateDialog(element)">
+              Update
+            </button>
+            <button mat-button class="delete-btn" (click)="deleteIncident(element)">
+              Delete
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    </table>
+
+  </div>
 
 </div>

@@ -1,34 +1,195 @@
+/* =========================================
+   PAGE CONTAINER
+========================================= */
+
 .incident-container {
-  padding: 24px;
+  padding: 40px;
+  background: #f8fafc;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
-/* Header */
+/* =========================================
+   HEADER
+========================================= */
+
 .header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 30px;
 }
 
-/* Table */
+.title-section h2 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 20px;
+  color: #111827;
+}
+
+.subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* =========================================
+   BUTTONS (40px STANDARD, SHARP)
+========================================= */
+
+.primary-btn,
+.apply-btn,
+.clear-btn {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Remove outline from stroked clear button */
+.clear-btn.mat-mdc-outlined-button {
+  border: none !important;
+}
+
+/* =========================================
+   FILTER BAR (SINGLE HORIZONTAL ROW)
+========================================= */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #ffffff;
+  padding: 16px 24px;
+  margin-bottom: 30px;
+  box-sizing: border-box;
+}
+
+/* Make all fields fixed width */
+.filter-field {
+  width: 220px;
+}
+
+/* Remove Angular bottom spacing */
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* Force EXACT 40px height */
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-container-height: 40px;
+}
+
+/* Remove extra vertical padding inside form field */
+.mat-mdc-text-field-wrapper {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* =========================================
+   FILTER BAR ALIGNMENT FIX
+========================================= */
+
+.filter-bar .mat-mdc-form-field {
+  margin-top: 0;
+}
+
+.filter-bar .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+  margin-top: 0 !important;
+}
+
+.filter-bar .mdc-notched-outline {
+  top: 0 !important;
+}
+
+.filter-bar .mat-mdc-form-field-flex {
+  margin-top: 0 !important;
+}
+
+/* =========================================
+   FILTER BUTTONS
+========================================= */
+
+.apply-btn,
+.clear-btn {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 0;
+  box-shadow: none;
+  align-self: auto;
+  margin-top: 0;
+}
+
+/* Remove outline from Clear button */
+.clear-btn.mat-mdc-outlined-button {
+  border: none !important;
+}
+
+/* =========================================
+   TABLE
+========================================= */
+
+.table-wrapper {
+  background: white;
+  border-radius: 0;
+  overflow: hidden;
+}
+
 table {
   width: 100%;
-  border-collapse: collapse;
 }
 
-/* Remove rounded edges */
-.mat-mdc-button,
-.mat-mdc-chip,
-.mat-mdc-table {
-  border-radius: 0 !important;
+.mat-header-cell {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #6b7280;
 }
 
-/* Sharper chips */
-.sharp-chip {
-  border-radius: 2px !important;
+.mat-cell {
+  font-size: 14px;
+  color: #1f2937;
 }
 
-/* Subtle hover */
-.mat-mdc-row:hover {
-  background-color: #f5f5f5;
+/* =========================================
+   ACTION BUTTONS
+========================================= */
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.update-btn,
+.delete-btn {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 0;
+  font-size: 13px;
+}
+
+/* =========================================
+   SEVERITY (COLORED TEXT ONLY)
+========================================= */
+
+.severity-badge {
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.severity-badge.low {
+  color: #15803d;
+}
+
+.severity-badge.medium {
+  color: #b45309;
+}
+
+.severity-badge.high {
+  color: #b91c1c;
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
 }
