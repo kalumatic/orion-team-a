@@ -83,4 +83,13 @@ public class EmployeeServiceImpl implements EmployeeService {
                 saved.getEmail()
         );
     }
+
+    @Override
+    public void deleteEmployee(Long id) {
+
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee with id " + id + " not found"));
+
+        employeeRepository.delete(employee);
+    }
 }
