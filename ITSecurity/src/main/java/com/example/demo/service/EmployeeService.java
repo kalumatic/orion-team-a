@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.request.BulkImportRequest;
 import com.example.demo.dto.request.CreateEmployeeRequest;
 import com.example.demo.dto.request.UpdateEmployeeRequest;
+import com.example.demo.dto.response.BulkImportResult;
 import com.example.demo.dto.response.EmployeeResponse;
 
 import org.springframework.data.domain.Page;
@@ -20,5 +22,6 @@ public interface EmployeeService {
     EmployeeResponse getEmployeeById(Long id);
     EmployeeResponse updateEmployee(Long id, UpdateEmployeeRequest request);
     void deleteEmployee(Long id);
+    BulkImportResult importEmployees(BulkImportRequest request);
     String exportAll();
 }
