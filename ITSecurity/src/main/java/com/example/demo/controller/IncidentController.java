@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.IncidentImportDTO;
 import com.example.demo.dto.IncidentRequestDTO;
 import com.example.demo.dto.IncidentResponseDTO;
 import com.example.demo.service.IncidentService;
@@ -22,6 +23,12 @@ public class IncidentController {
     @PostMapping
     public ResponseEntity<IncidentResponseDTO> createIncident(@Valid @RequestBody IncidentRequestDTO dto) {
         IncidentResponseDTO saved = incidentService.createIncident(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
+    @PostMapping("/importIncident")
+    public ResponseEntity<IncidentResponseDTO> importIncident(@Valid @RequestBody IncidentImportDTO dto) {
+        IncidentResponseDTO saved = incidentService.importIncident(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 

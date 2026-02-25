@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.IncidentImportDTO;
 import com.example.demo.dto.IncidentRequestDTO;
 import com.example.demo.dto.IncidentResponseDTO;
 import com.example.demo.entity.Device;
@@ -7,6 +8,7 @@ import com.example.demo.entity.Employee;
 import com.example.demo.entity.Incident;
 import com.example.demo.exceptions.DatabaseException;
 import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.exceptions.ValidationException;
 import com.example.demo.repository.DeviceRepository;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.repository.IncidentRepository;
@@ -28,9 +30,14 @@ public class IncidentServiceImpl implements IncidentService{
     private final EmployeeRepository employeeRepository;
     private final DeviceRepository deviceRepository;
 
+    private static final List<String> ALLOWED_SEVERITY = List.of("Low", "Medium", "High", "Critical");
+    private static final List<String> ALLOWED_STATUS = List.of("Open", "In Progress", "Closed");
+
 
     @Override
     public IncidentResponseDTO createIncident(IncidentRequestDTO req) {
+        validateIncident(req);
+
         Employee reporter = employeeRepository.findById(req.getReporterId()).orElseThrow(() -> new ResourceNotFoundException("Employee nije pronadjen"));
 
         Device device  = deviceRepository.findById(req.getDeviceId()).orElseThrow(()-> new ResourceNotFoundException("Device nije pronadjen"));
@@ -47,6 +54,29 @@ public class IncidentServiceImpl implements IncidentService{
             Incident saved = incidentRepository.save(incident);
             return mapToResponse(saved);
         }catch (Exception e){
+            throw new DatabaseException("Greška prilikom čuvanja incidenta: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public IncidentResponseDTO importIncident(IncidentImportDTO dto) {
+
+        Employee reporter = employeeRepository.findByEmail(dto.getEmail());
+
+        Device device  = deviceRepository.findBySerialNumber(dto.getSerialNumber());
+
+        Incident incident = new Incident();
+        incident.setDescription(dto.getDescription());
+        incident.setIncidentDate(dto.getIncidentDate());
+        incident.setSeverity(dto.getSeverity());
+        incident.setStatus(dto.getStatus());
+        incident.setReporter(reporter);
+        incident.setDevice(device);
+
+        try{
+            Incident saved = incidentRepository.save(incident);
+            return mapToResponse(saved);
+        }catch (Exception e) {
             throw new DatabaseException("Greška prilikom čuvanja incidenta: " + e.getMessage());
         }
     }
@@ -68,6 +98,15 @@ public class IncidentServiceImpl implements IncidentService{
         dto.setDeviceInfo(device.getDeviceType() + " " + device.getModel() + " " + device.getSerialNumber());
 
         return dto;
+    }
+
+    private void validateIncident(IncidentRequestDTO dto) {
+        if (!ALLOWED_SEVERITY.contains(dto.getSeverity())) {
+            throw new ValidationException("Nevažeća vrednost severity: " + dto.getSeverity());
+        }
+        if (!ALLOWED_STATUS.contains(dto.getStatus())) {
+            throw new ValidationException("Nevažeća vrednost status: " + dto.getStatus());
+        }
     }
 
     @Override
@@ -109,6 +148,8 @@ public class IncidentServiceImpl implements IncidentService{
 
     @Override
     public IncidentResponseDTO updateIncident(Long id, IncidentRequestDTO dto) {
+        validateIncident(dto);
+
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Incident sa ID " + id + " nije pronađen"));
 
