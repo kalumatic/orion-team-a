@@ -11,6 +11,11 @@ import { DeviceService } from '../../services/device.service';
 import { EmployeeService } from '../../services/employee.service';
 import { DeviceDialog } from './device-dialog/device-dialog';
 import { DeviceReassignDialog } from './device-reassign-dialog/device-reassign-dialog';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
+import { FormsModule } from '@angular/forms';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatInputModule } from '@angular/material/input';
 
 const PLACEHOLDER_DEVICES: DeviceResponse[] = [
   {
@@ -52,7 +57,14 @@ const PLACEHOLDER_DEVICES: DeviceResponse[] = [
     MatButtonModule,
     MatDialogModule,
     DeviceDialog,
-    DeviceReassignDialog
+    DeviceReassignDialog,
+    MatFormField,
+    MatLabel,
+    MatDatepickerModule,
+    FormsModule,
+    MatNativeDateModule,
+    MatInputModule,
+    MatDialogModule
   ],
   templateUrl: './devices.html',
   styleUrls: ['./devices.css'],
@@ -68,6 +80,12 @@ export class Devices implements AfterViewInit, OnInit {
     'actions'
   ];
 
+  deviceFilterValues = {
+    date: null as Date | null,
+    serialNumber: '',
+    deviceType: ''
+  };
+
   private employeeMap = new Map<number, string>();
 
   dataSource = new MatTableDataSource<DeviceResponse>([]);
@@ -81,6 +99,7 @@ export class Devices implements AfterViewInit, OnInit {
   ) {}
 
   ngOnInit() {
+    this.setupFilter();
     this.loadDevices();
     this.dataSource.data = PLACEHOLDER_DEVICES;
   }
@@ -205,5 +224,73 @@ export class Devices implements AfterViewInit, OnInit {
         error: (err) => console.error('Failed to delete device', err)
       });
     }
+  }
+
+  downloadCsv() {
+    this.deviceService.downloadCsv().subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'report.csv'; // You can change dynamically
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Download failed', err);
+      }
+    });
+  }
+  private setupFilter() {
+    this.dataSource.filterPredicate = (data: DeviceResponse, filter: string) => {
+      const search = JSON.parse(filter);
+
+      const matchesSerial =
+        !search.serialNumber ||
+        data.serialNumber.toLowerCase().includes(search.serialNumber);
+
+      const matchesType =
+        !search.deviceType ||
+        data.deviceType.toLowerCase().includes(search.deviceType);
+
+    const matchesDate = !search.date || (() => {
+      const d = new Date(data.assignmentDate);
+      const yyyy = d.getUTCFullYear();
+      const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+      const dd = String(d.getUTCDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}` === search.date;
+    })();
+
+      return matchesSerial && matchesType && matchesDate;
+    };
+  }
+  applyDeviceFilters() {
+    let formattedDate: string | null = null;
+
+    if (this.deviceFilterValues.date) {
+      const d = this.deviceFilterValues.date;
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      formattedDate = `${yyyy}-${mm}-${dd}`;
+    }
+
+    this.dataSource.filter = JSON.stringify({
+      serialNumber: this.deviceFilterValues.serialNumber.toLowerCase(),
+      deviceType: this.deviceFilterValues.deviceType.toLowerCase(),
+      date: formattedDate
+    });
+  }
+
+  clearDeviceFilters() {
+    this.deviceFilterValues = {
+      date: null,
+      serialNumber: '',
+      deviceType: ''
+    };
+
+    this.dataSource.filter = '';
   }
 }

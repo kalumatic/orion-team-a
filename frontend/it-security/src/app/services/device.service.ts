@@ -8,7 +8,7 @@ import { DeviceRequest, DeviceResponse } from '../types';
 })
 export class DeviceService {
 
-  private apiUrl = 'http://your-api-url/devices';
+  private apiUrl = 'http://localhost:8080/api/devices';
 
   constructor(private http: HttpClient) {}
 
@@ -31,5 +31,12 @@ export class DeviceService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  downloadCsv(): Observable<Blob> {
+    return this.http.get('/api/export-csv', {
+      responseType: 'blob'
+    });
+  }
+
 
 }

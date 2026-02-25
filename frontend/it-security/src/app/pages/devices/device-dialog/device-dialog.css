@@ -38,3 +38,7 @@ h2 {
   font-size: 12px;
   color: #666;
 }
+
+.sharp-btn {
+  border-radius: 0 !important;
+}

@@ -23,3 +23,7 @@ h2 {
 .mat-mdc-dialog-content {
   padding-top: 8px;
 }
+
+.sharp-btn {
+  border-radius: 0 !important;
+}

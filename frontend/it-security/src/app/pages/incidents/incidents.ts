@@ -85,14 +85,14 @@ export class Incidents implements AfterViewInit, OnInit {
     'actions'
   ];
 
-  private getYesterday(): string {
+  private getYesterday(): Date {
     const d = new Date();
     d.setDate(d.getDate() - 1);
-    return d.toISOString().split('T')[0];
+    return d;
   }
 
   filterValues: {
-    date: string | null;
+    date: Date | null;
     deviceInfo: string;
     reporterName: string;
   } = {
@@ -100,7 +100,6 @@ export class Incidents implements AfterViewInit, OnInit {
     deviceInfo: '',
     reporterName: ''
   };
-
   dataSource = new MatTableDataSource<IncidentResponse>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
@@ -157,7 +156,24 @@ export class Incidents implements AfterViewInit, OnInit {
   }
 
   applyFilters() {
-    this.dataSource.filter = JSON.stringify(this.filterValues);
+    const dateValue = this.filterValues.date;
+    let formattedDate: string | null = null;
+
+    if (dateValue) {
+      if (dateValue instanceof Date) {
+        const yyyy = dateValue.getFullYear();
+        const mm = String(dateValue.getMonth() + 1).padStart(2, '0');
+        const dd = String(dateValue.getDate()).padStart(2, '0');
+        formattedDate = `${yyyy}-${mm}-${dd}`;
+      } else {
+        formattedDate = dateValue;
+      }
+    }
+
+    this.dataSource.filter = JSON.stringify({
+      ...this.filterValues,
+      date: formattedDate
+    });
   }
 
   clearFilters() {
@@ -229,5 +245,23 @@ export class Incidents implements AfterViewInit, OnInit {
         error: (err) => console.error('Failed to delete incident', err)
       });
     }
+  }
+  downloadPdf() {
+    this.incidentService.downloadDailyReport().subscribe({
+      next: (data: Blob) => {
+        const blob = new Blob([data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+  
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'daily-report.pdf';
+        a.click();
+  
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error downloading PDF', err);
+      }
+    });
   }
 }

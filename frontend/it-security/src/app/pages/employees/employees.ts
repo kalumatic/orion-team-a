@@ -145,4 +145,22 @@ export class Employees implements AfterViewInit, OnInit {
       });
     }
   }
+
+  downloadCsv() {
+    this.employeeService.downloadCsv().subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'report.csv'; // You can change dynamically
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Download failed', err);
+      }
+    });
+  }
 }

@@ -80,8 +80,10 @@ export class IncidentDialog implements OnInit {
 
   ngOnInit(): void {
     console.log(this.data);
-    this.form.disable(); // disable form until data is loaded
-    forkJoin({
+    if (this.data) {
+      this.form.disable(); // disable form until data is loaded
+    }
+      forkJoin({
       employees: this.employeeService.getAllUnpaged(),
       devices: this.deviceService.getAll()
     }).subscribe({
@@ -182,7 +184,7 @@ export class IncidentDialog implements OnInit {
 
     // IMPORTANT FIX: if object (edit mode), return full list
     if (typeof value !== 'string') {
-      return of(this.devices);
+      return of([]);
     }
 
     const searchValue = value.toLowerCase().trim();

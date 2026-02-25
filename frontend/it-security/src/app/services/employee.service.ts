@@ -9,7 +9,7 @@ import { Page } from '../types';
 })
 export class EmployeeService {
 
-  private apiUrl = 'http://your-api-url/api/employees';
+  private apiUrl = 'http://localhost:8080/api/employees';
 
   constructor(private http: HttpClient) {}
 
@@ -37,6 +37,12 @@ export class EmployeeService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  downloadCsv(): Observable<Blob> {
+    return this.http.get('/api/export-csv', {
+      responseType: 'blob'
+    });
   }
 
 }

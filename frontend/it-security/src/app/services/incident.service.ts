@@ -8,7 +8,7 @@ import { IncidentRequest, IncidentResponse } from '../types';
 })
 export class IncidentService {
 
-  private apiUrl = 'http://your-api-url/incidents';
+  private apiUrl = 'http://localhost:8080/api/incidents';
 
   constructor(private http: HttpClient) {}
 
@@ -30,6 +30,12 @@ export class IncidentService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  downloadDailyReport(): Observable<Blob> {
+    return this.http.get('http://localhost:8080/api/reports/daily', {
+      responseType: 'blob'
+    });
   }
 
 }
