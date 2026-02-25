@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 public class BulkDeviceInsertResponseDTO {
     @Builder.Default
-    private List<BulkSavedDeviceDTO> saved = new ArrayList<>();
+    private List<Long> savedIds = new ArrayList<>();
 
     @Builder.Default
     private List<BulkFailedDeviceDTO> failed = new ArrayList<>();

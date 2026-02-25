@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.dto.BulkDeviceInsertResponseDTO;
 import com.example.demo.dto.BulkFailedDeviceDTO;
-import com.example.demo.dto.BulkSavedDeviceDTO;
 import com.example.demo.dto.DeviceRequestDTO;
 import com.example.demo.dto.DeviceResponseDTO;
 import com.example.demo.entity.Device;
@@ -98,11 +97,7 @@ public class DeviceServiceImpl implements DeviceService {
 
                 Device saved = deviceRepository.save(device);
 
-                response.getSaved().add(BulkSavedDeviceDTO.builder()
-                        .index(index)
-                        .id(saved.getId())
-                        .serialNumber(saved.getSerialNumber())
-                        .build());
+                response.getSavedIds().add(saved.getId());
             } catch (DataIntegrityViolationException ex) {
                 response.getFailed().add(buildFailed(index, dto, List.of("Database constraint violation while saving device.")));
             } catch (Exception ex) {
