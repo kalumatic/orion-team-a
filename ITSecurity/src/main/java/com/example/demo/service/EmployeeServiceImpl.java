@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.example.demo.dto.request.UpdateEmployeeRequest;
 import com.example.demo.exception.ResourceNotFoundException;
+import java.util.List;
 
 /**
  * EmployeeService implementation.
@@ -58,6 +59,32 @@ public class EmployeeServiceImpl implements EmployeeService {
                         e.getLastName(),
                         e.getEmail()
                 ));
+    }
+
+    @Override
+    public List<EmployeeResponse> getAllEmployees() {
+        return employeeRepository.findAll()
+                .stream()
+                .map(e -> new EmployeeResponse(
+                        e.getId(),
+                        e.getFirstName(),
+                        e.getLastName(),
+                        e.getEmail()
+                ))
+                .toList();
+    }
+
+    @Override
+    public EmployeeResponse getEmployeeById(Long id) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee with id " + id + " not found"));
+
+        return new EmployeeResponse(
+                employee.getId(),
+                employee.getFirstName(),
+                employee.getLastName(),
+                employee.getEmail()
+        );
     }
 
     @Override

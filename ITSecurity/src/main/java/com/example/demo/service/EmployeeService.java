@@ -6,6 +6,7 @@ import com.example.demo.dto.response.EmployeeResponse;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import java.util.List;
 
 /**
  * Service contract for Employee-related business operations.
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 public interface EmployeeService {
     EmployeeResponse createEmployee(CreateEmployeeRequest request);
     Page<EmployeeResponse> getEmployees(Pageable pageable);
+    List<EmployeeResponse> getAllEmployees();
+    EmployeeResponse getEmployeeById(Long id);
     EmployeeResponse updateEmployee(Long id, UpdateEmployeeRequest request);
     void deleteEmployee(Long id);
 }
