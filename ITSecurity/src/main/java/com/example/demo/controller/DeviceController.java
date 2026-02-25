@@ -29,7 +29,7 @@ public class DeviceController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PostMapping("/bulk")
+    @PostMapping("/bulk/import")
     public ResponseEntity<BulkDeviceInsertResponseDTO> createBulk(@RequestBody List<DeviceRequestDTO> requests) {
         BulkDeviceInsertResponseDTO response = service.createDevicesBulk(requests);
         return ResponseEntity.ok(response);
