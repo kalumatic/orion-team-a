@@ -32,6 +32,12 @@ public class DeviceController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<DeviceResponseDTO> getById(@PathVariable Long id) {
+        DeviceResponseDTO response = service.getDeviceById(id);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping
     public ResponseEntity<Page<DeviceResponseDTO>> getAll(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
         Page<DeviceResponseDTO> devices = service.getAllDevices(pageable);

@@ -79,6 +79,14 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
+    public DeviceResponseDTO getDeviceById(Long id) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not found!"));
+
+        return new DeviceResponseDTO(device);
+    }
+
+    @Override
     public Page<DeviceResponseDTO> getAllDevices(Pageable pageable) {
         Page<Device> devices = deviceRepository.findAll(pageable);
         return devices.map(DeviceResponseDTO::new);
