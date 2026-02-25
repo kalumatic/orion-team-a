@@ -10,7 +10,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class DeviceServiceImpl implements DeviceService {
@@ -48,6 +53,26 @@ public class DeviceServiceImpl implements DeviceService {
 
         // Map Device to DTO
         return new DeviceResponseDTO(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public byte[] exportDevicesCsv() {
+        List<Device> devices = deviceRepository.findAll();
+        StringBuilder csv = new StringBuilder();
+        csv.append("id,deviceType,model,serialNumber,assignedEmployeeId,assignmentDate\n");
+
+        for (Device device : devices) {
+            csv.append(toCsvValue(device.getId())).append(',')
+                    .append(toCsvValue(device.getDeviceType())).append(',')
+                    .append(toCsvValue(device.getModel())).append(',')
+                    .append(toCsvValue(device.getSerialNumber())).append(',')
+                    .append(toCsvValue(device.getAssignedEmployee() != null ? device.getAssignedEmployee().getId() : null)).append(',')
+                    .append(toCsvValue(device.getAssignmentDate()))
+                    .append('\n');
+        }
+
+        return csv.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
@@ -100,5 +125,25 @@ public class DeviceServiceImpl implements DeviceService {
         deviceRepository.delete(device);
 
         return new DeviceResponseDTO(device);
+    }
+
+    private String toCsvValue(Object value) {
+        if (value == null) {
+            return "";
+        }
+
+        String strValue;
+        if (value instanceof LocalDate date) {
+            strValue = date.toString();
+        } else {
+            strValue = value.toString();
+        }
+
+        boolean mustQuote = strValue.contains(",") || strValue.contains("\"") || strValue.contains("\n") || strValue.contains("\r");
+        if (!mustQuote) {
+            return strValue;
+        }
+
+        return "\"" + strValue.replace("\"", "\"\"") + "\"";
     }
 }
