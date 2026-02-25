@@ -27,8 +27,17 @@ public:
         const std::string& device,
         const std::string& description,
         Severity severity);
+
+    const Employee getEmployee();
+    const std::string getDevice();
+    const std::string getDescription();
+    const std::chrono::system_clock::time_point getDate();
+    const Severity getSeverity();
+    const Status getStatus();
+
 private:
-    static bool isValid(Employee e, std::string d);
+    static bool isValidEmpolyee(const Employee e);
+    static bool isValidDevice();
 
 private:
     Employee m_reporter;

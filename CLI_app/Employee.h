@@ -16,7 +16,10 @@ public:
              const std::string& lastName,
              const std::string& email);
 
+   
+
     std::string toJson(const std::string& filename) const;
+    
 
 private:
     static bool isValidName(const std::string& name);
