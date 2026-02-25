@@ -1,33 +1,9 @@
-<h2 mat-dialog-title>{{ isEditMode ? 'Update Device' : 'Create Device' }}</h2>
+<h2 mat-dialog-title>Reassign Device</h2>
 
 <form [formGroup]="form" (ngSubmit)="save()" mat-dialog-content class="dialog-form">
 
-  <mat-form-field appearance="fill">
-    <mat-label>Device Type</mat-label>
-    <input matInput formControlName="deviceType" />
-    <mat-error *ngIf="form.get('deviceType')?.hasError('required')">
-      Device Type is required
-    </mat-error>
-  </mat-form-field>
-
-  <mat-form-field appearance="fill">
-    <mat-label>Model</mat-label>
-    <input matInput formControlName="model" />
-    <mat-error *ngIf="form.get('model')?.hasError('required')">
-      Model is required
-    </mat-error>
-  </mat-form-field>
-
-  <mat-form-field appearance="fill">
-    <mat-label>Serial Number</mat-label>
-    <input matInput formControlName="serialNumber" />
-    <mat-error *ngIf="form.get('serialNumber')?.hasError('required')">
-      Serial Number is required
-    </mat-error>
-  </mat-form-field>
-
-  <mat-form-field appearance="fill">
-    <mat-label>Assigned Employee</mat-label>
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Search Employee</mat-label>
     <input
       type="text"
       matInput
@@ -52,7 +28,7 @@
     </mat-autocomplete>
 
     <mat-error *ngIf="form.get('employee')?.hasError('required')">
-      Assigned Employee is required
+      Please select an employee
     </mat-error>
   </mat-form-field>
 
@@ -61,6 +37,6 @@
 <div mat-dialog-actions align="end">
   <button mat-button type="button" (click)="cancel()">Cancel</button>
   <button mat-flat-button color="primary" type="submit" (click)="save()" [disabled]="form.invalid">
-    Save
+    Reassign
   </button>
 </div>

@@ -15,7 +15,7 @@
       <mat-option *ngFor="let employee of filteredEmployees$ | async"
                   [value]="employee">
       <div class="employee-option">
-          <strong>{{ employee.surname }} {{ employee.lastname }}</strong>
+          <strong>{{ employee.firstName }} {{ employee.lastName }}</strong>
           <small>{{ employee.email }}</small>
       </div>
       </mat-option>

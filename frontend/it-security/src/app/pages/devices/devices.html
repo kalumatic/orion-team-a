@@ -38,9 +38,15 @@
       </ng-container>
 
       <!-- Assigned Employee -->
-      <ng-container matColumnDef="assignedEmployee">
+      <ng-container matColumnDef="assignedEmployeeName">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Assigned Employee</th>
-        <td mat-cell *matCellDef="let device">{{ device.assignedEmployee }}</td>
+        <td mat-cell *matCellDef="let device">{{ device.assignedEmployeeName }}</td>
+      </ng-container>
+
+      <!-- Assignment Date -->
+      <ng-container matColumnDef="assignmentDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Assignment Date</th>
+        <td mat-cell *matCellDef="let device">{{ device.assignmentDate | date:'mediumDate' }}</td>
       </ng-container>
 
       <!-- Actions -->

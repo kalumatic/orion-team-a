@@ -9,23 +9,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
-interface Employee {
-  id: number;
-  surname: string;
-  lastname: string;
-  email: string;
-}
-
-interface Device {
-  deviceType: string;
-  model: string;
-  serialNumber: string;
-  assignedEmployee: string;
-}
+import { IncidentRequest, DeviceResponse, EmployeeResponse } from '../../../types';
+import { EmployeeService } from '../../../services/employee.service';
+import { DeviceService } from '../../../services/device.service';
 
 @Component({
   selector: 'app-incident-dialog',
@@ -52,30 +41,34 @@ export class IncidentDialog implements OnInit {
   today = new Date();
   isEditMode = false;
 
-  private employees: Employee[] = [
-    { id: 1, surname: 'John', lastname: 'Doe', email: 'john.doe@company.com' },
-    { id: 2, surname: 'Jane', lastname: 'Smith', email: 'jane.smith@company.com' },
-    { id: 3, surname: 'Michael', lastname: 'Brown', email: 'michael.brown@company.com' }
+  private employees: EmployeeResponse[] = [];
+  private devices: DeviceResponse[] = [];
+
+  private fallbackEmployees: EmployeeResponse[] = [
+    { id: 1, firstName: 'John', lastName: 'Doe', email: 'john.doe@company.com' },
+    { id: 2, firstName: 'Jane', lastName: 'Smith', email: 'jane.smith@company.com' },
+    { id: 3, firstName: 'Michael', lastName: 'Brown', email: 'michael.brown@company.com' }
   ];
 
-  private devices: Device[] = [
-    { deviceType: 'Laptop', model: 'Dell XPS 15', serialNumber: 'SN12345', assignedEmployee: 'John Doe' },
-    { deviceType: 'Phone', model: 'iPhone 14', serialNumber: 'SN54321', assignedEmployee: 'Jane Smith' },
-    { deviceType: 'Tablet', model: 'iPad Pro', serialNumber: 'SN99988', assignedEmployee: 'Michael Brown' },
-    { deviceType: 'Laptop', model: 'HP EliteBook', serialNumber: 'SN77766', assignedEmployee: 'John Doe' }
+  private fallbackDevices: DeviceResponse[] = [
+    { id: 1, deviceType: 'Laptop', model: 'Dell XPS 15', serialNumber: 'SN12345', assignedEmployee: 1, assignedEmployeeName: 'John Doe', assignmentDate: '2025-01-10' },
+    { id: 2, deviceType: 'Phone', model: 'iPhone 14', serialNumber: 'SN54321', assignedEmployee: 2, assignedEmployeeName: 'Jane Smith', assignmentDate: '2025-03-22' },
+    { id: 3, deviceType: 'Tablet', model: 'iPad Pro', serialNumber: 'SN99988', assignedEmployee: 3, assignedEmployeeName: 'Michael Brown', assignmentDate: '2025-06-05' },
+    { id: 4, deviceType: 'Laptop', model: 'HP EliteBook', serialNumber: 'SN77766', assignedEmployee: 1, assignedEmployeeName: 'John Doe', assignmentDate: '2025-07-15' }
   ];
 
-  filteredEmployees$!: Observable<Employee[]>;
-  filteredDevices$!: Observable<Device[]>;
+  filteredEmployees$!: Observable<EmployeeResponse[]>;
+  filteredDevices$!: Observable<DeviceResponse[]>;
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<IncidentDialog>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private http: HttpClient
+    private employeeService: EmployeeService,
+    private deviceService: DeviceService
   ) {
     this.form = this.fb.group({
-      id: [null], // important for update mode
+      id: [null],
       reporter: [null, Validators.required],
       device: [null, Validators.required],
       description: ['', Validators.required],
@@ -86,30 +79,79 @@ export class IncidentDialog implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(this.data);
+    this.form.disable(); // disable form until data is loaded
+    forkJoin({
+      employees: this.employeeService.getAllUnpaged(),
+      devices: this.deviceService.getAll()
+    }).subscribe({
+      next: ({ employees, devices }) => {
 
-    /* -------- Detect Edit Mode -------- */
-    if (this.data) {
-      this.isEditMode = true;
+        this.employees = employees?.length ? employees : this.fallbackEmployees;
+        this.devices = devices?.length ? devices : this.fallbackDevices;
 
-      this.form.patchValue({
-        id: this.data.id ?? null,
-        reporter: this.data.reporter ?? null,
-        device: this.data.device ?? null,
-        description: this.data.description,
-        date: this.data.date,
-        severity: this.data.severity,
-        status: this.data.status
-      });
-    }
+        if (this.data) {
+          this.isEditMode = true;
 
-    /* -------- Employee Search -------- */
+          const selectedEmployee = this.employees.find(
+            emp => emp.id === this.data.reporterId
+          );
+
+          const selectedDevice = this.devices.find(
+            dev => dev.id === this.data.deviceId
+          );
+
+          this.form.patchValue({
+            id: this.data.id ?? null,
+            reporter: selectedEmployee ?? null,
+            device: selectedDevice ?? null,
+            description: this.data.description,
+            date: this.data.incidentDate
+              ? new Date(this.data.incidentDate)
+              : new Date(),
+            severity: this.data.severity,
+            status: this.data.status
+          });
+        }
+        this.form.enable(); // enable form after data is loaded
+      },
+      error: (err) => {
+        console.error('Loading failed — using fallback data', err);
+        this.employees = this.fallbackEmployees;
+        this.devices = this.fallbackDevices;
+        if (this.data) {
+          this.isEditMode = true;
+
+          const selectedEmployee = this.employees.find(
+            emp => emp.id === this.data.reporterId
+          );
+
+          const selectedDevice = this.devices.find(
+            dev => dev.id === this.data.deviceId
+          );
+
+          this.form.patchValue({
+            id: this.data.id ?? null,
+            reporter: selectedEmployee ?? null,
+            device: selectedDevice ?? null,
+            description: this.data.description,
+            date: this.data.incidentDate
+              ? new Date(this.data.incidentDate)
+              : new Date(),
+            severity: this.data.severity,
+            status: this.data.status
+          });
+          this.form.enable(); // enable form even if loading failed
+        }
+        this.form.enable(); // enable form even if loading failed
+      }
+    });
     this.filteredEmployees$ = this.form.get('reporter')!.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap(value => this.searchEmployees(value))
     );
 
-    /* -------- Device Search -------- */
     this.filteredDevices$ = this.form.get('device')!.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
@@ -117,38 +159,51 @@ export class IncidentDialog implements OnInit {
     );
   }
 
-  private searchEmployees(value: string | Employee): Observable<Employee[]> {
-    if (typeof value !== 'string') return of([]);
+  private searchEmployees(value: string | EmployeeResponse): Observable<EmployeeResponse[]> {
+
+    // IMPORTANT FIX: if object (edit mode), return full list
+    if (typeof value !== 'string') {
+      return of([]);
+    }
 
     const searchValue = value.toLowerCase().trim();
     if (searchValue.length < 2) return of([]);
 
-    return of(this.employees.filter(emp =>
-      emp.surname.toLowerCase().includes(searchValue) ||
-      emp.lastname.toLowerCase().includes(searchValue) ||
-      emp.email.toLowerCase().includes(searchValue)
-    ));
+    return of(
+      this.employees.filter(emp =>
+        emp.firstName.toLowerCase().includes(searchValue) ||
+        emp.lastName.toLowerCase().includes(searchValue) ||
+        emp.email.toLowerCase().includes(searchValue)
+      )
+    );
   }
 
-  private searchDevices(value: string | Device): Observable<Device[]> {
-    if (typeof value !== 'string') return of([]);
+  private searchDevices(value: string | DeviceResponse): Observable<DeviceResponse[]> {
+
+    // IMPORTANT FIX: if object (edit mode), return full list
+    if (typeof value !== 'string') {
+      return of(this.devices);
+    }
 
     const searchValue = value.toLowerCase().trim();
     if (searchValue.length < 2) return of([]);
 
-    return of(this.devices.filter(dev =>
-      dev.deviceType.toLowerCase().includes(searchValue) ||
-      dev.model.toLowerCase().includes(searchValue) ||
-      dev.serialNumber.toLowerCase().includes(searchValue) ||
-      dev.assignedEmployee.toLowerCase().includes(searchValue)
-    ));
+    return of(
+      this.devices.filter(dev =>
+        dev.deviceType.toLowerCase().includes(searchValue) ||
+        dev.model.toLowerCase().includes(searchValue) ||
+        dev.serialNumber.toLowerCase().includes(searchValue)
+      )
+    );
   }
 
-  displayEmployee(employee: Employee): string {
-    return employee ? `${employee.surname} ${employee.lastname}` : '';
+  displayEmployee(employee: EmployeeResponse | string): string {
+    if (typeof employee === 'string') return employee;
+    return employee ? `${employee.firstName} ${employee.lastName}` : '';
   }
 
-  displayDevice(device: Device): string {
+  displayDevice(device: DeviceResponse | string): string {
+    if (typeof device === 'string') return device;
     return device ? `${device.deviceType} - ${device.serialNumber}` : '';
   }
 
@@ -157,22 +212,18 @@ export class IncidentDialog implements OnInit {
 
     const formValue = this.form.value;
 
-    const incidentResult = {
-      id: formValue.id, // exists if updating
-      reporter: this.displayEmployee(formValue.reporter),
+    const request: IncidentRequest = {
       description: formValue.description,
-      device: formValue.device.serialNumber,
-      date: formValue.date,
+      incidentDate: formValue.date instanceof Date
+        ? formValue.date.toISOString().split('T')[0]
+        : formValue.date,
       severity: formValue.severity,
-      status: formValue.status
+      status: formValue.status,
+      reporterId: formValue.reporter?.id,
+      deviceId: formValue.device?.id
     };
 
-    /* If you want backend later, this is where you'd branch:
-       if (this.isEditMode) -> call update API
-       else -> call create API
-    */
-
-    this.dialogRef.close(incidentResult);
+    this.dialogRef.close({ id: formValue.id, ...request });
   }
 
   cancel(): void {

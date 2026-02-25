@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { Employee, DeviceRequest } from '../../../types';
+import { Employee } from '../../../types';
 
 const PLACEHOLDER_EMPLOYEES: Employee[] = [
   { id: 1, firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@company.com' },
@@ -16,10 +16,13 @@ const PLACEHOLDER_EMPLOYEES: Employee[] = [
   { id: 3, firstName: 'Sophia', lastName: 'Lee', email: 'sophia.lee@company.com' },
   { id: 4, firstName: 'James', lastName: 'Carter', email: 'james.carter@company.com' },
   { id: 5, firstName: 'Emma', lastName: 'Wilson', email: 'emma.wilson@company.com' },
+  { id: 6, firstName: 'Liam', lastName: 'Davis', email: 'liam.davis@company.com' },
+  { id: 7, firstName: 'Olivia', lastName: 'Martinez', email: 'olivia.martinez@company.com' },
+  { id: 8, firstName: 'Noah', lastName: 'Anderson', email: 'noah.anderson@company.com' },
 ];
 
 @Component({
-  selector: 'app-device-dialog',
+  selector: 'app-device-reassign-dialog',
   standalone: true,
   imports: [
     CommonModule,
@@ -30,44 +33,25 @@ const PLACEHOLDER_EMPLOYEES: Employee[] = [
     MatButtonModule,
     MatAutocompleteModule,
   ],
-  templateUrl: './device-dialog.html',
-  styleUrl: './device-dialog.css'
+  templateUrl: './device-reassign-dialog.html',
+  styleUrl: './device-reassign-dialog.css'
 })
-export class DeviceDialog implements OnInit {
+export class DeviceReassignDialog implements OnInit {
 
   form: FormGroup;
-  isEditMode = false;
   filteredEmployees$!: Observable<Employee[]>;
 
   constructor(
     private fb: FormBuilder,
-    private dialogRef: MatDialogRef<DeviceDialog>,
+    private dialogRef: MatDialogRef<DeviceReassignDialog>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.form = this.fb.group({
-      id: [null],
-      assignedEmployeeId: [null],
-      deviceType: ['', Validators.required],
-      model: ['', Validators.required],
-      serialNumber: ['', Validators.required],
-      employee: [null, Validators.required],
+      employee: [null, Validators.required]
     });
   }
 
   ngOnInit(): void {
-    if (this.data) {
-      this.isEditMode = true;
-
-      this.form.patchValue({
-        id: this.data.id ?? null,
-        assignedEmployeeId: this.data.assignedEmployee ?? null,
-        deviceType: this.data.deviceType ?? '',
-        model: this.data.model ?? '',
-        serialNumber: this.data.serialNumber ?? '',
-        employee: this.data.assignedEmployeeName ?? null, // pre-fill name as placeholder
-      });
-    }
-
     this.filteredEmployees$ = this.form.get('employee')!.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
@@ -77,6 +61,7 @@ export class DeviceDialog implements OnInit {
 
   private searchEmployees(value: string | Employee): Observable<Employee[]> {
     if (typeof value !== 'string') return of([]);
+
     const searchValue = value.toLowerCase().trim();
     if (searchValue.length < 2) return of([]);
 
@@ -87,31 +72,13 @@ export class DeviceDialog implements OnInit {
     ));
   }
 
-  displayEmployee(employee: Employee | string): string {
-    if (typeof employee === 'string') return employee;
+  displayEmployee(employee: Employee): string {
     return employee ? `${employee.firstName} ${employee.lastName}` : '';
   }
 
   save(): void {
     if (this.form.invalid) return;
-
-    const formValue = this.form.value;
-    const employeeValue = formValue.employee;
-
-    const assignedEmployeeId = typeof employeeValue === 'object' && employeeValue !== null
-      ? employeeValue.id
-      : formValue.assignedEmployeeId; // fall back to original if not changed
-
-    const request: DeviceRequest & { id: number } = {
-      id: formValue.id,
-      deviceType: formValue.deviceType,
-      model: formValue.model,
-      serialNumber: formValue.serialNumber,
-      assignedEmployeeId: assignedEmployeeId,
-      assignmentDate: new Date().toISOString().split('T')[0]
-    };
-
-    this.dialogRef.close(request);
+    this.dialogRef.close(this.form.value.employee);
   }
 
   cancel(): void {

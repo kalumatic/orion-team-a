@@ -7,11 +7,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
-import { Employee } from '../../types/types';
+import { EmployeeRequest, EmployeeResponse } from '../../types';
 import { EmployeeService } from '../../services/employee.service';
 import { EmployeeDialog } from './employee-dialog/employee-dialog';
 
-const PLACEHOLDER_EMPLOYEES: Employee[] = [
+const PLACEHOLDER_EMPLOYEES: EmployeeResponse[] = [
   { id: 1, firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@company.com' },
   { id: 2, firstName: 'Mark', lastName: 'Stevens', email: 'mark.stevens@company.com' },
   { id: 3, firstName: 'Sophia', lastName: 'Lee', email: 'sophia.lee@company.com' },
@@ -50,7 +50,7 @@ export class Employees implements AfterViewInit, OnInit {
     'actions'
   ];
 
-  dataSource = new MatTableDataSource<Employee>([]);
+  dataSource = new MatTableDataSource<EmployeeResponse>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -61,12 +61,32 @@ export class Employees implements AfterViewInit, OnInit {
   ) {}
 
   ngOnInit() {
-    this.dataSource.data = PLACEHOLDER_EMPLOYEES; // tmp - swap when backend is ready
+    this.dataSource.data = PLACEHOLDER_EMPLOYEES; // tmp - remove and call loadEmployees() when backend is ready
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+
+    // trigger backend call on every page or page size change
+    this.paginator.page.subscribe(() => {
+      this.loadEmployees();
+    });
+  }
+
+  /* ================= LOAD ================= */
+
+  private loadEmployees() {
+    const page = this.paginator.pageIndex;
+    const size = this.paginator.pageSize;
+
+    this.employeeService.getAll(page, size).subscribe({
+      next: (response) => {
+        this.dataSource.data = response.content;
+        this.paginator.length = response.totalElements;
+      },
+      error: (err) => console.error('Failed to load employees', err)
+    });
   }
 
   /* ================= CRUD ================= */
@@ -78,28 +98,26 @@ export class Employees implements AfterViewInit, OnInit {
       data: null
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: EmployeeRequest) => {
       if (result) {
         this.employeeService.create(result).subscribe({
           next: (created) => {
             this.dataSource.data = [...this.dataSource.data, created];
           },
-          error: (err) => {
-            console.error('Failed to create employee', err);
-          }
+          error: (err) => console.error('Failed to create employee', err)
         });
       }
     });
   }
 
-  openUpdateDialog(employee: Employee) {
+  openUpdateDialog(employee: EmployeeResponse) {
     const dialogRef = this.dialog.open(EmployeeDialog, {
       width: '650px',
       disableClose: true,
       data: { ...employee }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: EmployeeRequest & { id: number }) => {
       if (result) {
         this.employeeService.update(result.id, result).subscribe({
           next: (updated) => {
@@ -107,15 +125,13 @@ export class Employees implements AfterViewInit, OnInit {
               item.id === updated.id ? updated : item
             );
           },
-          error: (err) => {
-            console.error('Failed to update employee', err);
-          }
+          error: (err) => console.error('Failed to update employee', err)
         });
       }
     });
   }
 
-  deleteEmployee(employee: Employee) {
+  deleteEmployee(employee: EmployeeResponse) {
     const confirmed = confirm('Are you sure you want to delete this employee?');
 
     if (confirmed) {
@@ -125,9 +141,7 @@ export class Employees implements AfterViewInit, OnInit {
             item => item.id !== employee.id
           );
         },
-        error: (err) => {
-          console.error('Failed to delete employee', err);
-        }
+        error: (err) => console.error('Failed to delete employee', err)
       });
     }
   }

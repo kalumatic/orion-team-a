@@ -5,7 +5,7 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-
+import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { IncidentDialog } from './incident-dialog/incident-dialog';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,40 +13,40 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { Incident } from '../../types/types';
+import { IncidentRequest, IncidentResponse } from '../../types';
 import { IncidentService } from '../../services/incident.service';
 
-
-
-
-const PLACEHOLDER_INCIDENTS: Incident[] = [
+const PLACEHOLDER_INCIDENTS: IncidentResponse[] = [
   {
     id: 1,
-    reporter: 'Alice Johnson',
+    reporterName: 'Alice Johnson',
+    reporterId: 1,
     description: 'Device overheating during operation',
-    serialNumber: 'RX200-8891',
-    deviceType: 'Router',
-    date: new Date('2026-02-10'),
+    deviceInfo: 'Router - RX200-8891',
+    deviceId: 1,
+    incidentDate: '2026-02-10',
     severity: 'High',
     status: 'Open'
   },
   {
     id: 2,
-    reporter: 'Mark Stevens',
+    reporterName: 'Mark Stevens',
+    reporterId: 2,
     description: 'Screen flickering intermittently',
-    serialNumber: 'MP24-3344',
-    deviceType: 'Monitor',
-    date: new Date('2026-02-14'),
+    deviceInfo: 'Monitor - MP24-3344',
+    deviceId: 2,
+    incidentDate: '2026-02-14',
     severity: 'Medium',
     status: 'In Progress'
   },
   {
     id: 3,
-    reporter: 'Sophia Lee',
+    reporterName: 'Sophia Lee',
+    reporterId: 3,
     description: 'Battery draining too quickly',
-    serialNumber: 'TZ10-9901',
-    deviceType: 'Tablet',
-    date: new Date('2026-02-18'),
+    deviceInfo: 'Tablet - TZ10-9901',
+    deviceId: 3,
+    incidentDate: '2026-02-18',
     severity: 'Low',
     status: 'Resolved'
   }
@@ -67,46 +67,41 @@ const PLACEHOLDER_INCIDENTS: Incident[] = [
     MatNativeDateModule,
     MatInputModule,
     MatSelectModule,
-    IncidentDialog
+    IncidentDialog,
+    MatIconModule
   ],
   templateUrl: './incidents.html',
   styleUrls: ['./incidents.css'],
 })
 export class Incidents implements AfterViewInit, OnInit {
-  //placeholders
-  
 
   displayedColumns: string[] = [
-    'reporter',
+    'reporterName',
     'description',
-    'serialNumber',
-    'deviceType',
-    'date',
+    'deviceInfo',
+    'incidentDate',
     'severity',
     'status',
     'actions'
   ];
 
-  /* ================= DEFAULT DATE (YESTERDAY) ================= */
-
-  private getYesterday(): Date {
+  private getYesterday(): string {
     const d = new Date();
     d.setDate(d.getDate() - 1);
-    d.setHours(0, 0, 0, 0);
-    return d;
+    return d.toISOString().split('T')[0];
   }
 
   filterValues: {
-    date: Date | null;
-    serialNumber: string;
-    deviceType: string;
+    date: string | null;
+    deviceInfo: string;
+    reporterName: string;
   } = {
     date: this.getYesterday(),
-    serialNumber: '',
-    deviceType: ''
+    deviceInfo: '',
+    reporterName: ''
   };
 
-  dataSource = new MatTableDataSource<Incident>([]);
+  dataSource = new MatTableDataSource<IncidentResponse>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -117,9 +112,8 @@ export class Incidents implements AfterViewInit, OnInit {
 
   ngOnInit() {
     this.initializeFilter();
-    //this.loadIncidents();
-    this.dataSource.data = PLACEHOLDER_INCIDENTS; // tmp
-    this.applyFilters(); // apply yesterday filter on init
+    this.dataSource.data = PLACEHOLDER_INCIDENTS; // tmp - replace with loadIncidents()
+    this.applyFilters();
   }
 
   ngAfterViewInit() {
@@ -132,8 +126,7 @@ export class Incidents implements AfterViewInit, OnInit {
     this.incidentService.getAll().subscribe({
       next: (incidents) => {
         this.dataSource.data = incidents;
-        this.dataSource.data = PLACEHOLDER_INCIDENTS; // tmp 
-        this.applyFilters(); // apply yesterday filter after data loads
+        this.applyFilters();
       },
       error: (err) => {
         console.error('Failed to load incidents', err);
@@ -144,27 +137,22 @@ export class Incidents implements AfterViewInit, OnInit {
   /* ================= FILTER LOGIC ================= */
 
   private initializeFilter() {
-    this.dataSource.filterPredicate = (data: Incident, filter: string) => {
+    this.dataSource.filterPredicate = (data: IncidentResponse, filter: string) => {
       const search = JSON.parse(filter);
 
       const matchesDate =
         !search.date ||
-        new Date(data.date).toDateString() ===
-          new Date(search.date).toDateString();
+        data.incidentDate === search.date;
 
-      const matchesSerial =
-        !search.serialNumber ||
-        data.serialNumber
-          .toLowerCase()
-          .includes(search.serialNumber.toLowerCase());
+      const matchesDeviceInfo =
+        !search.deviceInfo ||
+        data.deviceInfo.toLowerCase().includes(search.deviceInfo.toLowerCase());
 
-      const matchesDevice =
-        !search.deviceType ||
-        data.deviceType
-          .toLowerCase()
-          .includes(search.deviceType.toLowerCase());
+      const matchesReporter =
+        !search.reporterName ||
+        data.reporterName.toLowerCase().includes(search.reporterName.toLowerCase());
 
-      return matchesDate && matchesSerial && matchesDevice;
+      return matchesDate && matchesDeviceInfo && matchesReporter;
     };
   }
 
@@ -175,10 +163,9 @@ export class Incidents implements AfterViewInit, OnInit {
   clearFilters() {
     this.filterValues = {
       date: null,
-      serialNumber: '',
-      deviceType: ''
+      deviceInfo: '',
+      reporterName: ''
     };
-
     this.applyFilters();
   }
 
@@ -191,29 +178,29 @@ export class Incidents implements AfterViewInit, OnInit {
       data: null
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: IncidentRequest) => {
       if (result) {
         this.incidentService.create(result).subscribe({
           next: (created) => {
             this.dataSource.data = [...this.dataSource.data, created];
             this.applyFilters();
           },
-          error: (err) => {
-            console.error('Failed to create incident', err);
-          }
+          error: (err) => console.error('Failed to create incident', err)
         });
       }
     });
   }
 
-  openUpdateDialog(incident: Incident) {
+  openUpdateDialog(incident: IncidentResponse) {
     const dialogRef = this.dialog.open(IncidentDialog, {
       width: '650px',
       disableClose: true,
       data: { ...incident }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    console.log(incident);
+
+    dialogRef.afterClosed().subscribe((result: IncidentRequest & { id: number }) => {
       if (result) {
         this.incidentService.update(result.id, result).subscribe({
           next: (updated) => {
@@ -222,15 +209,13 @@ export class Incidents implements AfterViewInit, OnInit {
             );
             this.applyFilters();
           },
-          error: (err) => {
-            console.error('Failed to update incident', err);
-          }
+          error: (err) => console.error('Failed to update incident', err)
         });
       }
     });
   }
 
-  deleteIncident(incident: Incident) {
+  deleteIncident(incident: IncidentResponse) {
     const confirmed = confirm('Are you sure you want to delete this incident?');
 
     if (confirmed) {
@@ -241,9 +226,7 @@ export class Incidents implements AfterViewInit, OnInit {
           );
           this.applyFilters();
         },
-        error: (err) => {
-          console.error('Failed to delete incident', err);
-        }
+        error: (err) => console.error('Failed to delete incident', err)
       });
     }
   }

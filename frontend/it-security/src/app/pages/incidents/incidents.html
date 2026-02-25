@@ -13,10 +13,10 @@
       + New Incident
     </button>
   </div>
-
+  
   <!-- ================= FILTER BAR ================= -->
   <div class="filter-bar">
-
+    
     <!-- DATE -->
     <mat-form-field appearance="outline" class="filter-field">
       <mat-label>Date</mat-label>
@@ -28,20 +28,20 @@
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
-    <!-- DEVICE TYPE -->
+    <!-- DEVICE INFO -->
     <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>Device Type</mat-label>
+      <mat-label>Device</mat-label>
       <input
         matInput
-        [(ngModel)]="filterValues.deviceType">
+        [(ngModel)]="filterValues.deviceInfo">
     </mat-form-field>
 
-    <!-- SERIAL -->
+    <!-- REPORTER -->
     <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>Serial</mat-label>
+      <mat-label>Reporter</mat-label>
       <input
         matInput
-        [(ngModel)]="filterValues.serialNumber">
+        [(ngModel)]="filterValues.reporterName">
     </mat-form-field>
 
     <button mat-raised-button class="apply-btn" (click)="applyFilters()">
@@ -53,16 +53,21 @@
     </button>
 
   </div>
-
+  <button mat-raised-button class="primary-btn" (click)="openCreateDialog()">
+    <mat-icon>picture_as_pdf</mat-icon>
+    Generate daily report
+  </button>
+  <p> </p>
+  
   <!-- ================= TABLE ================= -->
   <div class="table-wrapper">
-
+    
     <table mat-table [dataSource]="dataSource" matSort>
-
+      
       <!-- Reporter -->
-      <ng-container matColumnDef="reporter">
+      <ng-container matColumnDef="reporterName">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Reporter</th>
-        <td mat-cell *matCellDef="let element">{{ element.reporter }}</td>
+        <td mat-cell *matCellDef="let element">{{ element.reporterName }}</td>
       </ng-container>
 
       <!-- Description -->
@@ -71,24 +76,16 @@
         <td mat-cell *matCellDef="let element">{{ element.description }}</td>
       </ng-container>
 
-      <!-- Serial -->
-      <ng-container matColumnDef="serialNumber">
-        <th mat-header-cell *matHeaderCellDef>Serial</th>
-        <td mat-cell *matCellDef="let element">{{ element.serialNumber }}</td>
-      </ng-container>
-
-      <!-- Device Type -->
-      <ng-container matColumnDef="deviceType">
-        <th mat-header-cell *matHeaderCellDef>Device Type</th>
-        <td mat-cell *matCellDef="let element">{{ element.deviceType }}</td>
+      <!-- Device Info -->
+      <ng-container matColumnDef="deviceInfo">
+        <th mat-header-cell *matHeaderCellDef>Device</th>
+        <td mat-cell *matCellDef="let element">{{ element.deviceInfo }}</td>
       </ng-container>
 
       <!-- Date -->
-      <ng-container matColumnDef="date">
+      <ng-container matColumnDef="incidentDate">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-        <td mat-cell *matCellDef="let element">
-          {{ element.date | date:'yyyy-MM-dd' }}
-        </td>
+        <td mat-cell *matCellDef="let element">{{ element.incidentDate }}</td>
       </ng-container>
 
       <!-- Severity -->
