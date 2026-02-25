@@ -15,7 +15,7 @@ public class DeviceResponseDTO {
     private String deviceType;
     private String model;
     private String serialNumber;
-    private String assignedEmployeeName;
+    private Long assignedEmployee;
     private LocalDate assignmentDate;
 
     public DeviceResponseDTO(Device device) {
@@ -23,7 +23,7 @@ public class DeviceResponseDTO {
         this.deviceType = device.getDeviceType();
         this.model = device.getModel();
         this.serialNumber = device.getSerialNumber();
-        this.assignedEmployeeName = device.getAssignedEmployee().getFirstName() + " " + device.getAssignedEmployee().getLastName();
+        this.assignedEmployee = device.getAssignedEmployee().getId();
         this.assignmentDate = device.getAssignmentDate();
     }
 }
