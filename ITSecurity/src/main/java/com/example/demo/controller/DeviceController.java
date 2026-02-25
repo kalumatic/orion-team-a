@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/devices")
 public class DeviceController {
@@ -41,6 +43,12 @@ public class DeviceController {
     @GetMapping
     public ResponseEntity<Page<DeviceResponseDTO>> getAll(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
         Page<DeviceResponseDTO> devices = service.getAllDevices(pageable);
+        return ResponseEntity.ok(devices);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<DeviceResponseDTO>> getAllList() {
+        List<DeviceResponseDTO> devices = service.getAllDevicesList();
         return ResponseEntity.ok(devices);
     }
 

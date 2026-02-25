@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 public class DeviceServiceImpl implements DeviceService {
     private final DeviceRepository deviceRepository;
@@ -90,6 +92,14 @@ public class DeviceServiceImpl implements DeviceService {
     public Page<DeviceResponseDTO> getAllDevices(Pageable pageable) {
         Page<Device> devices = deviceRepository.findAll(pageable);
         return devices.map(DeviceResponseDTO::new);
+    }
+
+    @Override
+    public List<DeviceResponseDTO> getAllDevicesList() {
+        List<Device> devices = deviceRepository.findAll();
+        return devices.stream()
+                .map(DeviceResponseDTO::new)
+                .toList();
     }
 
     @Override
