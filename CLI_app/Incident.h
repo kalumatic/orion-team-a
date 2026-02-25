@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include <string>
 #include <chrono>
@@ -23,12 +22,13 @@ public:
         Closed
     };
 
-    Incident(const Employee& reporter,
+    Incident(const std::string& reporter,
         const std::string& device,
         const std::string& description,
-        Severity severity);
+        const std::string& severity,
+        const std::string& status);
 
-    const Employee getEmployee();
+    const std::string getEmployee();
     const std::string getDevice();
     const std::string getDescription();
     const std::chrono::system_clock::time_point getDate();
@@ -36,11 +36,13 @@ public:
     const Status getStatus();
 
 private:
-    static bool isValidEmpolyee(const Employee e);
-    static bool isValidDevice();
+    static bool isValidEmpolyee(const std::string& e);
+    static bool isValidDevice(const std::string& d);
+    static Severity parseSeverity(const std::string& str);
+    static Status parseStatus(const std::string& str);
 
 private:
-    Employee m_reporter;
+    std::string m_reporter;
     std::string m_device;
     std::string m_description;
     std::chrono::system_clock::time_point m_date;

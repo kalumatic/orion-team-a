@@ -1,5 +1,4 @@
-#ifndef ORION_TEAM_A_EMPLOYEE_H
-#define ORION_TEAM_A_EMPLOYEE_H
+#pragma once
 
 
 #include <string>
@@ -12,6 +11,7 @@ private:
     std::string m_email;
 
 public:
+    Employee() = default;
     Employee(const std::string& name,
              const std::string& lastName,
              const std::string& email);
@@ -25,6 +25,3 @@ private:
     static bool isValidName(const std::string& name);
     static bool isValidEmail(const std::string& email);
 };
-
-
-#endif //ORION_TEAM_A_EMPLOYEE_H

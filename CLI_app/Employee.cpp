@@ -6,6 +6,8 @@
 
 using json = nlohmann::json;
 
+
+
 Employee::Employee(const std::string& name,const std::string& lastName, const std::string& email)
     {
         if (!isValidName(name))
@@ -37,6 +39,7 @@ bool Employee::isValidEmail(const std::string& email) {
         return false;
     return true;
 }
+
 
 std::string Employee::toJson(const std::string& filename) const
 {
