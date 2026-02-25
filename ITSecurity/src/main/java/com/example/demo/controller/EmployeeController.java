@@ -5,6 +5,10 @@ import com.example.demo.dto.response.EmployeeResponse;
 import com.example.demo.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,5 +61,18 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
+    }
+
+
+    @GetMapping(value = "/bulk/export", produces = "text/csv")
+    public ResponseEntity<byte[]> exportAllEmployeesCsv() {
+        String csv = employeeService.exportAll();
+        byte[] bytes = csv.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"employees.csv\"")
+                .contentType(new MediaType("text", "csv"))
+                .contentLength(bytes.length)
+                .body(bytes);
     }
 }
