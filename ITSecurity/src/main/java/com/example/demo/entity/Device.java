@@ -18,16 +18,17 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Device type is mandatory")
+    @Column(nullable = false)
     private String deviceType;
 
+    @Column(nullable = false)
     private String model;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String serialNumber;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id")
+    @JoinColumn(name = "employee_id", nullable = false)
     private Employee assignedEmployee;
 
     private LocalDate assignmentDate;
