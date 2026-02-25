@@ -13,6 +13,9 @@ public class IncidentResponseDTO {
     private String severity;
     private String status;
 
+    private Long reporterId;
+    private Long deviceId;
+
     private String reporterName; // spojen firstName + lastName
     private String deviceInfo;   // spojen deviceType + model + serialNumber
 

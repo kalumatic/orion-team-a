@@ -31,7 +31,7 @@ public class IncidentServiceImpl implements IncidentService{
 
     @Override
     public IncidentResponseDTO createIncident(IncidentRequestDTO req) {
-        Employee reporter = employeeRepository.findById(req.getReporterId()).orElseThrow(() -> new ResolutionException("Employee nije pronadjen"));
+        Employee reporter = employeeRepository.findById(req.getReporterId()).orElseThrow(() -> new ResourceNotFoundException("Employee nije pronadjen"));
 
         Device device  = deviceRepository.findById(req.getDeviceId()).orElseThrow(()-> new ResourceNotFoundException("Device nije pronadjen"));
 
@@ -58,6 +58,9 @@ public class IncidentServiceImpl implements IncidentService{
         dto.setIncidentDate(incident.getIncidentDate());
         dto.setSeverity(incident.getSeverity());
         dto.setStatus(incident.getStatus());
+
+        dto.setReporterId(incident.getReporter().getId());
+        dto.setDeviceId(incident.getDevice().getId());
 
         dto.setReporterName(incident.getReporter().getFirstName() + " " + incident.getReporter().getLastName());
 
