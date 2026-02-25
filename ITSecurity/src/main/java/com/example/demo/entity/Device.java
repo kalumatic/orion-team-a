@@ -2,10 +2,9 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "devices")
@@ -13,18 +12,24 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Device {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Device type is mandatory")
+    @Column(nullable = false)
     private String deviceType;
 
+    @Column(nullable = false)
     private String model;
+
+    @Column(unique = true, nullable = false)
     private String serialNumber;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id")
+    @JoinColumn(name = "employee_id", nullable = false)
     private Employee assignedEmployee;
+
+    private LocalDate assignmentDate;
 }
