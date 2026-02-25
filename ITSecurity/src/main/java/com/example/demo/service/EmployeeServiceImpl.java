@@ -119,4 +119,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employeeRepository.delete(employee);
     }
+
+    @Override
+    public String exportAll() {
+        List<EmployeeResponse> employees = getAllEmployees();
+        StringBuilder csv = new StringBuilder();
+        csv.append("id,firstName,lastName,email\n");
+
+        for (EmployeeResponse employee : employees) {
+            csv.append(employee.getId()).append(",")
+                    .append(employee.getFirstName()).append(",")
+                    .append(employee.getLastName()).append(",")
+                    .append(employee.getEmail()).append("\n");
+        }
+        return csv.toString();
+    }
 }
