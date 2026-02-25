@@ -1,5 +1,8 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.BulkDeviceInsertResponseDTO;
+import com.example.demo.dto.BulkFailedDeviceDTO;
+import com.example.demo.dto.BulkSavedDeviceDTO;
 import com.example.demo.dto.DeviceRequestDTO;
 import com.example.demo.dto.DeviceResponseDTO;
 import com.example.demo.entity.Device;
@@ -8,9 +11,16 @@ import com.example.demo.repository.DeviceRepository;
 import com.example.demo.repository.EmployeeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class DeviceServiceImpl implements DeviceService {
@@ -48,6 +58,59 @@ public class DeviceServiceImpl implements DeviceService {
 
         // Map Device to DTO
         return new DeviceResponseDTO(saved);
+    }
+
+    @Override
+    public BulkDeviceInsertResponseDTO createDevicesBulk(List<DeviceRequestDTO> requests) {
+        BulkDeviceInsertResponseDTO response = new BulkDeviceInsertResponseDTO(new ArrayList<>(), new ArrayList<>());
+        if (requests == null || requests.isEmpty()) {
+            return response;
+        }
+
+        Set<String> batchSerialNumbers = new HashSet<>();
+
+        for (int index = 0; index < requests.size(); index++) {
+            DeviceRequestDTO dto = requests.get(index);
+            List<String> errors = validateBulkRequest(dto, batchSerialNumbers);
+            if (!errors.isEmpty()) {
+                response.getFailed().add(buildFailed(index, dto, errors));
+                continue;
+            }
+
+            try {
+                Optional<Employee> employeeOptional = employeeRepository.findById(dto.getAssignedEmployeeId());
+                if (employeeOptional.isEmpty()) {
+                    response.getFailed().add(buildFailed(index, dto, List.of("Assigned employee not found!")));
+                    continue;
+                }
+
+                if (deviceRepository.findBySerialNumber(dto.getSerialNumber().trim()).isPresent()) {
+                    response.getFailed().add(buildFailed(index, dto, List.of("Device with this serial number already exists!")));
+                    continue;
+                }
+
+                Device device = new Device();
+                device.setDeviceType(dto.getDeviceType().trim());
+                device.setModel(dto.getModel().trim());
+                device.setSerialNumber(dto.getSerialNumber().trim());
+                device.setAssignedEmployee(employeeOptional.get());
+                device.setAssignmentDate(dto.getAssignmentDate());
+
+                Device saved = deviceRepository.save(device);
+
+                response.getSaved().add(BulkSavedDeviceDTO.builder()
+                        .index(index)
+                        .id(saved.getId())
+                        .serialNumber(saved.getSerialNumber())
+                        .build());
+            } catch (DataIntegrityViolationException ex) {
+                response.getFailed().add(buildFailed(index, dto, List.of("Database constraint violation while saving device.")));
+            } catch (Exception ex) {
+                response.getFailed().add(buildFailed(index, dto, List.of("Unexpected error while saving device.")));
+            }
+        }
+
+        return response;
     }
 
     @Override
@@ -100,5 +163,47 @@ public class DeviceServiceImpl implements DeviceService {
         deviceRepository.delete(device);
 
         return new DeviceResponseDTO(device);
+    }
+
+    private List<String> validateBulkRequest(DeviceRequestDTO dto, Set<String> batchSerialNumbers) {
+        List<String> errors = new ArrayList<>();
+        if (dto == null) {
+            errors.add("Device record is missing.");
+            return errors;
+        }
+
+        if (isBlank(dto.getDeviceType())) {
+            errors.add("Device type is mandatory!");
+        }
+        if (isBlank(dto.getModel())) {
+            errors.add("Model is mandatory!");
+        }
+        if (isBlank(dto.getSerialNumber())) {
+            errors.add("Serial number is mandatory!");
+        }
+        if (dto.getAssignedEmployeeId() == null) {
+            errors.add("Assigned employee is mandatory!");
+        }
+
+        if (!isBlank(dto.getSerialNumber())) {
+            String serial = dto.getSerialNumber().trim();
+            if (!batchSerialNumbers.add(serial)) {
+                errors.add("Duplicate serial number in request payload!");
+            }
+        }
+
+        return errors;
+    }
+
+    private BulkFailedDeviceDTO buildFailed(int index, DeviceRequestDTO dto, List<String> errors) {
+        return BulkFailedDeviceDTO.builder()
+                .index(index)
+                .serialNumber(dto == null ? null : dto.getSerialNumber())
+                .errors(errors)
+                .build();
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }
