@@ -1,4 +1,4 @@
-/* 
+/* #include "CLI.h"
 
 int main() {
 	CLI terminal;
@@ -8,52 +8,28 @@ int main() {
 	return 0;
 }*/
 #include <iostream>
-#include "CLI.h"
-
-using namespace std;
+#include "Employee.h"
+#include "EmployeeService.h"
+#include "IncidentService.h"
+//#include "Device.h"
 
 int main() {
-    try {
-       EmployeeService employeeService;
-       //Employee emp("dim", "Doe", "dim@email.com");
-       //if (employeeService.createEmployee(emp)) {
-           //Device device("laptop", "LenovoThinkPad", "1444", emp);
-           DeviceService devService(employeeService);
-           CLI terminal(employeeService, devService);
+    
+        IncidentService service("http://localhost:8080");
 
-           terminal.run();
-           //devService.createDevice(device);
+        bool success = service.createIncident(
+            "johne@email.com",      // must exist in DB
+            "SERIAL123",               // MUST EXIST in DB
+            "Test incident from C++",
+            "High",
+            "Open"
+        );
 
-          // devService.fetchAndSearchAllDevices("1444");
-       //}
+        if (success)
+            std::cout << "Incident created successfully.\n";
+        else
+            std::cout << "Failed to create incident.\n";
 
-        //Employee emp("Jane", "Doe", "jane@email.com");
-       // employeeService.fetchAllEmployees();
-       
-
-        
-        //CLI terminal(employeeService, devService);
-
-        //terminal.run();
-        //Employee emp("Johne", "Doe", "johne@email.com");
-
-        //auto j = emp.toJson();
-
-       
-
-        //bool testCreate = eSerivce.createEmployee(emp);
-
-       // cout << testCreate << "\n";
-
-       // bool testFetch = eSerivce.fetchAllEmployees();
-
-       // cout << !testFetch << "\n";
-
-        //eSerivce.printToCSV("test");
-        
-       // std::cout << j.dump(4) << std::endl;   
-    }
-    catch (const std::exception& ex) {
-        std::cerr << "Error: " << ex.what() << std::endl;
-    }
+        return 0;
+    
 }

@@ -104,8 +104,21 @@ bool EmployeeService::createEmployee(Employee& employee){
     return false;
 }
 
+bool EmployeeService::emailExists(const std::string& email)
+{
+
+    for (const auto& emp : allEmployees)
+    {
+        if (emp.getEmail() == email)
+            return true;
+    }
+
+    return false;
+}
 
 
+
+//OCEKUJE SE DATE I TIME POZIVA KOMANDE
 void EmployeeService::printToCSV(const string& filename) const {
 	ofstream file(filename);
 

@@ -104,12 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-<<<<<<< HEAD
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
-=======
       <LanguageStandard>stdcpp20</LanguageStandard>
->>>>>>> feature/cli-mergingBranch
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,32 +127,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CLI.cpp" />
-<<<<<<< HEAD
-    <ClCompile Include="Device.cpp" />
-    <ClCompile Include="DeviceService.cpp" />
-    <ClCompile Include="Employee.cpp" />
-    <ClCompile Include="EmployeeService.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\CLI\CLI.cpp" />
+    <ClCompile Include="..\CLI\Device.cpp" />
+    <ClCompile Include="..\CLI\Employee.cpp" />
+    <ClCompile Include="..\CLI\EmployeeService.cpp" />
+    <ClCompile Include="..\CLI\Incident.cpp" />
+    <ClCompile Include="..\CLI\IncidentService.cpp" />
+    <ClCompile Include="..\CLI\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Employee\CLI_app\json.hpp" />
-    <ClInclude Include="CLI.h" />
-    <ClInclude Include="Device.h" />
-    <ClInclude Include="DeviceService.h" />
-    <ClInclude Include="Employee.h" />
-    <ClInclude Include="EmployeeService.h" />
-=======
-    <ClCompile Include="Employee.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Incident.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CLI.h" />
-    <ClInclude Include="Employee.h" />
-    <ClInclude Include="Incident.h" />
-    <ClInclude Include="json.hpp" />
->>>>>>> feature/cli-mergingBranch
+    <ClInclude Include="..\CLI\CLI.h" />
+    <ClInclude Include="..\CLI\Device.h" />
+    <ClInclude Include="..\CLI\Employee.h" />
+    <ClInclude Include="..\CLI\EmployeeService.h" />
+    <ClInclude Include="..\CLI\Incident.h" />
+    <ClInclude Include="..\CLI\IncidentService.h" />
+    <ClInclude Include="..\CLI\json.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
