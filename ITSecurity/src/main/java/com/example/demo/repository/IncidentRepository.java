@@ -14,4 +14,6 @@ public interface IncidentRepository extends JpaRepository<Incident,Long> {
     List<Incident> findByDeviceSerialNumber(String serialNumber);
 
     List<Incident> findByIncidentDateAndDeviceDeviceType(LocalDate date, String deviceType);
+
+    boolean existsByReporterIdAndDeviceIdAndIncidentDate(Long reporterId, Long deviceId, LocalDate incidentDate);
 }
