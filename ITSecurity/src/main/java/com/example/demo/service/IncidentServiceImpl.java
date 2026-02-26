@@ -4,6 +4,11 @@ import com.example.demo.dto.request.AiIncidentGenerateRequest;
 import com.example.demo.dto.request.IncidentImportRequest;
 import com.example.demo.dto.request.IncidentRequestDTO;
 import com.example.demo.dto.response.AiIncidentGenerateResponse;
+import com.example.demo.dto.request.BulkIncidentImportRequest;
+import com.example.demo.dto.request.IncidentImportRequest;
+import com.example.demo.dto.request.IncidentRequestDTO;
+import com.example.demo.dto.response.BulkIncidentImportResult;
+import com.example.demo.dto.response.FailedIncidentRecord;
 import com.example.demo.dto.response.IncidentResponseDTO;
 import com.example.demo.entity.Device;
 import com.example.demo.entity.Employee;
@@ -313,4 +318,114 @@ public class IncidentServiceImpl implements IncidentService{
 
     private record PairCandidate(Employee employee, Device device) {
     }
+    @Override
+    public BulkIncidentImportResult importIncidentsBulk(BulkIncidentImportRequest request) {
+        List<Long> successfulIds = new ArrayList<>();
+        List<FailedIncidentRecord> failedRecords = new ArrayList<>();
+
+        for (BulkIncidentImportRequest.IncidentImportItem item : request.getIncidents()) {
+
+            String mandatoryError = validateMandatoryFields(item);
+            if (mandatoryError != null) {
+                addFailed(failedRecords, item, mandatoryError);
+                continue;
+            }
+
+            if (!ALLOWED_SEVERITY.contains(item.getSeverity())) {
+                addFailed(failedRecords, item, "Invalid severity: " + item.getSeverity());
+                continue;
+            }
+            if (!ALLOWED_STATUS.contains(item.getStatus())) {
+                addFailed(failedRecords, item, "Invalid status: " + item.getStatus());
+                continue;
+            }
+
+            Employee reporter = employeeRepository.findByEmail(item.getReporterEmail()).orElse(null);
+            if (reporter == null) {
+                addFailed(failedRecords, item, "Reporter not found: " + item.getReporterEmail());
+                continue;
+            }
+
+            Device device = deviceRepository.findBySerialNumber(item.getDeviceSerialNumber()).orElse(null);
+            if (device == null) {
+                addFailed(failedRecords, item, "Device not found: " + item.getDeviceSerialNumber());
+                continue;
+            }
+
+            try {
+                Incident incident = new Incident();
+                incident.setDescription(item.getDescription());
+                incident.setIncidentDate(item.getIncidentDate());
+                incident.setSeverity(item.getSeverity());
+                incident.setStatus(item.getStatus());
+                incident.setReporter(reporter);
+                incident.setDevice(device);
+
+                Incident saved = incidentRepository.save(incident);
+                successfulIds.add(saved.getId());
+
+            } catch (Exception e) {
+                addFailed(failedRecords, item, "Database error: " + e.getMessage());
+            }
+        }
+
+        return new BulkIncidentImportResult(successfulIds, failedRecords);
+    }
+
+
+
+
+
+
+    @Override
+    public String exportAllIncidentsToCsv() {
+        List<IncidentResponseDTO> incidents = getAllIncidents(null, null, null);
+
+        incidents.sort(Comparator.comparing(IncidentResponseDTO::getId));
+
+        StringBuilder csv = new StringBuilder();
+        csv.append("id,description,incident_Date,severity,status,device_Id,reported_Id\n");
+
+        for (IncidentResponseDTO dto : incidents) {
+            csv.append(dto.getId()).append(",")
+                    .append(dto.getDescription()).append(",")
+                    .append(dto.getIncidentDate()).append(",")
+                    .append(dto.getSeverity()).append(",")
+                    .append(dto.getStatus()).append(",")
+                    .append(dto.getDeviceId()).append(",")
+                    .append(dto.getReporterId()).append(",")
+                    .append("\n");
+        }
+
+        return csv.toString();
+    }
+
+
+
+
+
+
+    private void addFailed(List<FailedIncidentRecord> failedRecords,
+                           BulkIncidentImportRequest.IncidentImportItem item,
+                           String errorMessage) {
+        failedRecords.add(new FailedIncidentRecord(
+                item.getDescription(),
+                item.getIncidentDate(),
+                item.getSeverity(),
+                item.getStatus(),
+                item.getReporterEmail(),
+                item.getDeviceSerialNumber(),
+                errorMessage
+        ));
+    }
+    private String validateMandatoryFields(BulkIncidentImportRequest.IncidentImportItem item) {
+        if (item.getDescription() == null || item.getDescription().isBlank()) return "Description is required";
+        if (item.getIncidentDate() == null) return "Incident date is required";
+        if (item.getSeverity() == null || item.getSeverity().isBlank()) return "Severity is required";
+        if (item.getStatus() == null || item.getStatus().isBlank()) return "Status is required";
+        if (item.getReporterEmail() == null || item.getReporterEmail().isBlank()) return "Reporter email is required";
+        if (item.getDeviceSerialNumber() == null || item.getDeviceSerialNumber().isBlank()) return "Device serial number is required";
+        return null;
+    }
+
 }

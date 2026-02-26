@@ -4,11 +4,17 @@ import com.example.demo.dto.request.AiIncidentGenerateRequest;
 import com.example.demo.dto.request.IncidentImportRequest;
 import com.example.demo.dto.request.IncidentRequestDTO;
 import com.example.demo.dto.response.AiIncidentGenerateResponse;
+import com.example.demo.dto.request.BulkIncidentImportRequest;
+import com.example.demo.dto.request.IncidentImportRequest;
+import com.example.demo.dto.request.IncidentRequestDTO;
+import com.example.demo.dto.response.BulkIncidentImportResult;
 import com.example.demo.dto.response.IncidentResponseDTO;
 import com.example.demo.service.IncidentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,4 +75,25 @@ public class IncidentController {
         incidentService.deleteIncident(id);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
+
+    @PostMapping(value = "/bulk/import", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<BulkIncidentImportResult> importIncidentsBulk(
+            @Valid @RequestBody BulkIncidentImportRequest request
+    ) {
+        BulkIncidentImportResult result = incidentService.importIncidentsBulk(request);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(value = "/bulk/export", produces = "text/csv")
+    public ResponseEntity<byte[]> exportAllIncidentsCsv() {
+        String csv = incidentService.exportAllIncidentsToCsv();
+        byte[] bytes = csv.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"incidents.csv\"")
+                .contentType(new MediaType("text", "csv"))
+                .contentLength(bytes.length)
+                .body(bytes);
+    }
+
 }

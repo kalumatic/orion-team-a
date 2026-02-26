@@ -1,0 +1,99 @@
+/* =========================================
+   PAGE CONTAINER
+========================================= */
+
+.employee-container {
+  padding: 40px;
+  background: #f8fafc;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.title-section h2 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 20px;
+  color: #111827;
+}
+
+.subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.primary-btn {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* =========================================
+   TABLE
+========================================= */
+
+.table-wrapper {
+  background: white;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+}
+
+.mat-header-cell {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.mat-cell {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+/* =========================================
+   PAGINATOR
+========================================= */
+
+.paginator-wrapper {
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* =========================================
+   ACTION BUTTONS
+========================================= */
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.update-btn,
+.delete-btn {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 0;
+  font-size: 13px;
+}

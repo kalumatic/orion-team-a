@@ -1,0 +1,37 @@
+.topbar {
+  height: 60px;
+  background-color: #1f2937; /* neutral dark */
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+}
+
+.login-btn {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.login-btn:hover {
+  background-color: #1d4ed8;
+}

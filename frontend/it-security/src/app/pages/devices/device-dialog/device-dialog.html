@@ -1,0 +1,76 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Update Device' : 'Create Device' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()" mat-dialog-content class="dialog-form">
+
+  <mat-form-field appearance="fill">
+    <mat-label>Device Type</mat-label>
+    <input matInput formControlName="deviceType" />
+    <mat-error *ngIf="form.get('deviceType')?.hasError('required')">
+      Device Type is required
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Model</mat-label>
+    <input matInput formControlName="model" />
+    <mat-error *ngIf="form.get('model')?.hasError('required')">
+      Model is required
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Serial Number</mat-label>
+    <input matInput formControlName="serialNumber" />
+    <mat-error *ngIf="form.get('serialNumber')?.hasError('required')">
+      Serial Number is required
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Assigned Employee</mat-label>
+    <input
+      type="text"
+      matInput
+      [matAutocomplete]="auto"
+      formControlName="employee"
+    />
+
+    <mat-autocomplete
+      #auto="matAutocomplete"
+      [displayWith]="displayEmployee"
+      panelClass="employee-autocomplete-panel">
+
+      <mat-option
+        *ngFor="let employee of filteredEmployees$ | async"
+        [value]="employee">
+        <div class="employee-option">
+          <strong>{{ employee.firstName }} {{ employee.lastName }}</strong>
+          <small>{{ employee.email }}</small>
+        </div>
+      </mat-option>
+
+    </mat-autocomplete>
+
+    <mat-error *ngIf="form.get('employee')?.hasError('required')">
+      Assigned Employee is required
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Assignment Date</mat-label>
+    <input matInput [matDatepicker]="assignmentPicker" formControlName="assignmentDate" />
+    <mat-datepicker-toggle matSuffix [for]="assignmentPicker"></mat-datepicker-toggle>
+    <mat-datepicker #assignmentPicker></mat-datepicker>
+    <mat-error *ngIf="form.get('assignmentDate')?.hasError('required')">
+      Assignment Date is required
+    </mat-error>
+  </mat-form-field>
+
+</form>
+
+<div mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button class="sharp-btn" mat-flat-button color="primary" type="submit" (click)="save()" [disabled]="form.invalid">
+    Save
+  </button>
+</div>
