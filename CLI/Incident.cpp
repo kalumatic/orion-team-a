@@ -20,6 +20,7 @@ Incident::Incident(const std::string& reporter,
     m_description = description;
     m_severity = severity;
     m_status = status;
+    m_date = std::chrono::system_clock::now();
     
 }
 
