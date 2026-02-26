@@ -1,0 +1,37 @@
+/* Make full height work */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+app-root {
+  display: block;
+  height: 100%;
+}
+
+/* Main layout wrapper */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Body section (sidebar + content) */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Sidebar */
+app-sidebar {
+  width: 250px; /* adjust if needed */
+  display: block;
+}
+
+/* Main content */
+.app-content {
+  flex: 1;
+  padding: 24px;
+  overflow: auto;
+}
