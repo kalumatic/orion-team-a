@@ -1,31 +1,16 @@
 import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { HttpResponse } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 
 import { EmployeeRequest, EmployeeResponse } from '../../types';
-import { EmployeeService } from '../../services/employee.service';
+import { EmployeeService } from '../../core/services/employee.service';
 import { EmployeeDialog } from './employee-dialog/employee-dialog';
-import { HttpResponse } from '@angular/common/http';
-
-const PLACEHOLDER_EMPLOYEES: EmployeeResponse[] = [
-  { id: 1, firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@company.com' },
-  { id: 2, firstName: 'Mark', lastName: 'Stevens', email: 'mark.stevens@company.com' },
-  { id: 3, firstName: 'Sophia', lastName: 'Lee', email: 'sophia.lee@company.com' },
-  { id: 4, firstName: 'James', lastName: 'Carter', email: 'james.carter@company.com' },
-  { id: 5, firstName: 'Emma', lastName: 'Wilson', email: 'emma.wilson@company.com' },
-  { id: 6, firstName: 'Liam', lastName: 'Davis', email: 'liam.davis@company.com' },
-  { id: 7, firstName: 'Olivia', lastName: 'Martinez', email: 'olivia.martinez@company.com' },
-  { id: 8, firstName: 'Noah', lastName: 'Anderson', email: 'noah.anderson@company.com' },
-  { id: 9, firstName: 'Ava', lastName: 'Thomas', email: 'ava.thomas@company.com' },
-  { id: 10, firstName: 'William', lastName: 'Jackson', email: 'william.jackson@company.com' },
-  { id: 11, firstName: 'Isabella', lastName: 'White', email: 'isabella.white@company.com' },
-  { id: 12, firstName: 'Benjamin', lastName: 'Harris', email: 'benjamin.harris@company.com' },
-];
 
 @Component({
   selector: 'app-employees',
@@ -44,12 +29,7 @@ const PLACEHOLDER_EMPLOYEES: EmployeeResponse[] = [
 })
 export class Employees implements AfterViewInit, OnInit {
 
-  displayedColumns: string[] = [
-    'firstName',
-    'lastName',
-    'email',
-    'actions'
-  ];
+  displayedColumns: string[] = ['firstName', 'lastName', 'email', 'actions'];
 
   dataSource = new MatTableDataSource<EmployeeResponse>([]);
 
@@ -58,22 +38,16 @@ export class Employees implements AfterViewInit, OnInit {
 
   constructor(
     private employeeService: EmployeeService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private toastr: ToastrService
   ) {}
 
-  ngOnInit() {
-    //this.dataSource.data = PLACEHOLDER_EMPLOYEES; // tmp - remove and call loadEmployees() when backend is ready
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
-    //this.dataSource.paginator = this.paginator;
-
-    this.paginator.page.subscribe(() => {
-      this.loadEmployees();
-    });
-
-    this.loadEmployees(); // add this
+    this.paginator.page.subscribe(() => this.loadEmployees());
+    this.loadEmployees();
   }
 
   /* ================= LOAD ================= */
@@ -87,7 +61,7 @@ export class Employees implements AfterViewInit, OnInit {
         this.dataSource.data = response.content;
         this.paginator.length = response.totalElements;
       },
-      error: (err) => console.error('Failed to load employees', err)
+      error: () => {}
     });
   }
 
@@ -95,18 +69,17 @@ export class Employees implements AfterViewInit, OnInit {
 
   openCreateDialog() {
     const dialogRef = this.dialog.open(EmployeeDialog, {
-      width: '650px',
-      disableClose: true,
-      data: null
+      width: '650px', disableClose: true, data: null
     });
 
     dialogRef.afterClosed().subscribe((result: EmployeeRequest) => {
       if (result) {
         this.employeeService.create(result).subscribe({
-          next: (created) => {
-            this.dataSource.data = [...this.dataSource.data, created];
+          next: () => {
+            this.toastr.success('Employee created successfully');
+            this.loadEmployees();
           },
-          error: (err) => console.error('Failed to create employee', err)
+          error: () => {}
         });
       }
     });
@@ -114,20 +87,17 @@ export class Employees implements AfterViewInit, OnInit {
 
   openUpdateDialog(employee: EmployeeResponse) {
     const dialogRef = this.dialog.open(EmployeeDialog, {
-      width: '650px',
-      disableClose: true,
-      data: { ...employee }
+      width: '650px', disableClose: true, data: { ...employee }
     });
 
     dialogRef.afterClosed().subscribe((result: EmployeeRequest & { id: number }) => {
       if (result) {
         this.employeeService.update(result.id, result).subscribe({
-          next: (updated) => {
-            this.dataSource.data = this.dataSource.data.map(item =>
-              item.id === updated.id ? updated : item
-            );
+          next: () => {
+            this.toastr.success('Employee updated successfully');
+            this.loadEmployees();
           },
-          error: (err) => console.error('Failed to update employee', err)
+          error: () => {}
         });
       }
     });
@@ -139,11 +109,10 @@ export class Employees implements AfterViewInit, OnInit {
     if (confirmed) {
       this.employeeService.delete(employee.id).subscribe({
         next: () => {
-          this.dataSource.data = this.dataSource.data.filter(
-            item => item.id !== employee.id
-          );
+          this.toastr.success('Employee deleted successfully');
+          this.loadEmployees();
         },
-        error: (err) => console.error('Failed to delete employee', err)
+        error: () => {}
       });
     }
   }
@@ -163,8 +132,10 @@ export class Employees implements AfterViewInit, OnInit {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
+
+        this.toastr.success('CSV downloaded successfully');
       },
-      error: (err) => console.error('Download failed', err)
+      error: () => {}
     });
   }
 }

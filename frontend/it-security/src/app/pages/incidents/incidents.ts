@@ -1,56 +1,21 @@
 import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatIcon, MatIconModule } from '@angular/material/icon';
-import { IncidentDialog } from './incident-dialog/incident-dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { IncidentRequest, IncidentResponse } from '../../types';
-import { IncidentService } from '../../services/incident.service';
+import { ToastrService } from 'ngx-toastr';
 
-const PLACEHOLDER_INCIDENTS: IncidentResponse[] = [
-  {
-    id: 1,
-    reporterName: 'Alice Johnson',
-    reporterId: 1,
-    description: 'Device overheating during operation',
-    deviceInfo: 'Router - RX200-8891',
-    deviceId: 1,
-    incidentDate: '2026-02-10',
-    severity: 'High',
-    status: 'Open'
-  },
-  {
-    id: 2,
-    reporterName: 'Mark Stevens',
-    reporterId: 2,
-    description: 'Screen flickering intermittently',
-    deviceInfo: 'Monitor - MP24-3344',
-    deviceId: 2,
-    incidentDate: '2026-02-14',
-    severity: 'Medium',
-    status: 'In Progress'
-  },
-  {
-    id: 3,
-    reporterName: 'Sophia Lee',
-    reporterId: 3,
-    description: 'Battery draining too quickly',
-    deviceInfo: 'Tablet - TZ10-9901',
-    deviceId: 3,
-    incidentDate: '2026-02-18',
-    severity: 'Low',
-    status: 'Resolved'
-  }
-];
+import { IncidentRequest, IncidentResponse } from '../../types';
+import { IncidentService } from '../../core/services/incident.service';
+import { IncidentDialog } from './incident-dialog/incident-dialog';
 
 @Component({
   selector: 'app-incidents',
@@ -76,13 +41,8 @@ const PLACEHOLDER_INCIDENTS: IncidentResponse[] = [
 export class Incidents implements AfterViewInit, OnInit {
 
   displayedColumns: string[] = [
-    'reporterName',
-    'description',
-    'deviceInfo',
-    'incidentDate',
-    'severity',
-    'status',
-    'actions'
+    'reporterName', 'description', 'deviceInfo',
+    'incidentDate', 'severity', 'status', 'actions'
   ];
 
   private getYesterday(): Date {
@@ -100,18 +60,19 @@ export class Incidents implements AfterViewInit, OnInit {
     deviceInfo: '',
     reporterName: ''
   };
+
   dataSource = new MatTableDataSource<IncidentResponse>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private dialog: MatDialog,
-    private incidentService: IncidentService
+    private incidentService: IncidentService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
     this.initializeFilter();
-    //this.dataSource.data = PLACEHOLDER_INCIDENTS; // tmp - replace with loadIncidents()
     this.loadIncidents();
     this.applyFilters();
   }
@@ -125,13 +86,10 @@ export class Incidents implements AfterViewInit, OnInit {
   private loadIncidents() {
     this.incidentService.getAll().subscribe({
       next: (incidents) => {
-        console.log('Loaded incidents:', incidents);
         this.dataSource.data = incidents;
         this.applyFilters();
       },
-      error: (err) => {
-        console.error('Failed to load incidents', err);
-      }
+      error: () => {}
     });
   }
 
@@ -179,11 +137,7 @@ export class Incidents implements AfterViewInit, OnInit {
   }
 
   clearFilters() {
-    this.filterValues = {
-      date: null,
-      deviceInfo: '',
-      reporterName: ''
-    };
+    this.filterValues = { date: null, deviceInfo: '', reporterName: '' };
     this.applyFilters();
   }
 
@@ -191,19 +145,17 @@ export class Incidents implements AfterViewInit, OnInit {
 
   openCreateDialog() {
     const dialogRef = this.dialog.open(IncidentDialog, {
-      width: '650px',
-      disableClose: true,
-      data: null
+      width: '650px', disableClose: true, data: null
     });
 
     dialogRef.afterClosed().subscribe((result: IncidentRequest) => {
       if (result) {
         this.incidentService.create(result).subscribe({
-          next: (created) => {
-            this.dataSource.data = [...this.dataSource.data, created];
-            this.applyFilters();
+          next: () => {
+            this.toastr.success('Incident created successfully');
+            this.loadIncidents();
           },
-          error: (err) => console.error('Failed to create incident', err)
+          error: () => {}
         });
       }
     });
@@ -211,23 +163,17 @@ export class Incidents implements AfterViewInit, OnInit {
 
   openUpdateDialog(incident: IncidentResponse) {
     const dialogRef = this.dialog.open(IncidentDialog, {
-      width: '650px',
-      disableClose: true,
-      data: { ...incident }
+      width: '650px', disableClose: true, data: { ...incident }
     });
-
-    console.log(incident);
 
     dialogRef.afterClosed().subscribe((result: IncidentRequest & { id: number }) => {
       if (result) {
         this.incidentService.update(result.id, result).subscribe({
-          next: (updated) => {
-            this.dataSource.data = this.dataSource.data.map(item =>
-              item.id === updated.id ? updated : item
-            );
-            this.applyFilters();
+          next: () => {
+            this.toastr.success('Incident updated successfully');
+            this.loadIncidents();
           },
-          error: (err) => console.error('Failed to update incident', err)
+          error: () => {}
         });
       }
     });
@@ -239,31 +185,30 @@ export class Incidents implements AfterViewInit, OnInit {
     if (confirmed) {
       this.incidentService.delete(incident.id).subscribe({
         next: () => {
-          this.dataSource.data = this.dataSource.data.filter(
-            item => item.id !== incident.id
-          );
-          this.applyFilters();
+          this.toastr.success('Incident deleted successfully');
+          this.loadIncidents();
         },
-        error: (err) => console.error('Failed to delete incident', err)
+        error: () => {}
       });
     }
   }
+
   downloadPdf() {
     this.incidentService.downloadDailyReport().subscribe({
       next: (data: Blob) => {
         const blob = new Blob([data], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
-  
+
         const a = document.createElement('a');
         a.href = url;
         a.download = 'daily-report.pdf';
         a.click();
-  
+
         window.URL.revokeObjectURL(url);
+
+        this.toastr.success('Daily report downloaded successfully');
       },
-      error: (err) => {
-        console.error('Error downloading PDF', err);
-      }
+      error: () => {}
     });
   }
 }
