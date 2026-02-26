@@ -111,3 +111,37 @@ Incident::Status Incident::parseStatus(const std::string& str) {
 
     throw std::invalid_argument("Invalid status: " + str);
 }
+
+using json = nlohmann::json;
+
+json Incident::toJson() const
+{
+    json j;
+
+    j["reporterId"] = m_reporter;
+    j["device"] = m_device;
+    j["description"] = m_description;
+
+    // Convert enums to string (recommended)
+    switch (m_severity)
+    {
+    case Severity::Low:      j["severity"] = "Low"; break;
+    case Severity::Medium:   j["severity"] = "Medium"; break;
+    case Severity::High:     j["severity"] = "High"; break;
+    case Severity::Critical: j["severity"] = "Critical"; break;
+    }
+
+    switch (m_status)
+    {
+    case Status::Open:       j["status"] = "Open"; break;
+    case Status::InProgress: j["status"] = "InProgress"; break;
+    case Status::Closed:     j["status"] = "Closed"; break;
+    }
+
+    // Optional: convert date to timestamp
+    j["date"] = std::chrono::duration_cast<std::chrono::seconds>(
+        m_date.time_since_epoch()
+    ).count();
+
+    return j;
+}

@@ -34,6 +34,7 @@ public:
     const std::chrono::system_clock::time_point getDate();
     const Severity getSeverity();
     const Status getStatus();
+    nlohmann::json toJson() const;
 
 private:
     static bool isValidEmpolyee(const std::string& e);
