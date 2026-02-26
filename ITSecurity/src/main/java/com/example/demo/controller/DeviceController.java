@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.BulkDeviceInsertResponseDTO;
 import com.example.demo.dto.DeviceRequestDTO;
 import com.example.demo.dto.DeviceResponseDTO;
 import com.example.demo.service.DeviceService;
@@ -26,6 +27,12 @@ public class DeviceController {
     public ResponseEntity<DeviceResponseDTO> create(@Valid @RequestBody DeviceRequestDTO request) {
         DeviceResponseDTO response = service.createDevice(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/bulk/import")
+    public ResponseEntity<BulkDeviceInsertResponseDTO> createBulk(@RequestBody List<DeviceRequestDTO> requests) {
+        BulkDeviceInsertResponseDTO response = service.createDevicesBulk(requests);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
