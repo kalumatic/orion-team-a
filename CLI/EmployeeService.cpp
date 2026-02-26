@@ -27,7 +27,7 @@ Employee EmployeeService::getEmployee(long id) {
     return emp;
 }
 
-bool EmployeeService::fetchAllEmployees(){
+bool EmployeeService::fetchAllEmployees() {
     allEmployees.clear();
 
     auto response = cpr::Get(
@@ -38,13 +38,13 @@ bool EmployeeService::fetchAllEmployees(){
         std::cerr << "Error: " << response.status_code << "\n";
         return false;
     }
-    
+
 
     auto jsonData = nlohmann::json::parse(response.text);
 
     cout << jsonData.dump();
 
-   for (const auto& item : jsonData) {
+    for (const auto& item : jsonData) {
         Employee emp(
             item.at("firstName").get<std::string>(),
             item.at("lastName").get<std::string>(),
@@ -86,7 +86,7 @@ long EmployeeService::fetchAndSearchAllEmployes(const string& email) {
     return 0;
 }
 
-bool EmployeeService::createEmployee(Employee& employee){
+bool EmployeeService::createEmployee(Employee& employee) {
     nlohmann::json jsonData = employee.toJson();
 
     auto response = cpr::Post(
@@ -104,23 +104,10 @@ bool EmployeeService::createEmployee(Employee& employee){
     return false;
 }
 
-bool EmployeeService::emailExists(const std::string& email)
-{
-
-    for (const auto& emp : allEmployees)
-    {
-        if (emp.getEmail() == email)
-            return true;
-    }
-
-    return false;
-}
 
 
-
-//OCEKUJE SE DATE I TIME POZIVA KOMANDE
 void EmployeeService::printToCSV(const string& filename) const {
-	ofstream file(filename);
+    ofstream file(filename);
 
     auto now = std::chrono::system_clock::now();
     std::time_t now_time = std::chrono::system_clock::to_time_t(now);
@@ -131,5 +118,16 @@ void EmployeeService::printToCSV(const string& filename) const {
     file << "Filename,date and time\n";
     file << filename << ",";
     file << std::put_time(&tm, "%d-%m-%Y %H:%M:%S");
-    
+
+}
+bool EmployeeService::emailExists(const std::string& email)
+{
+
+    for (const auto& emp : allEmployees)
+    {
+        if (emp.getEmail() == email)
+            return true;
+    }
+
+    return false;
 }

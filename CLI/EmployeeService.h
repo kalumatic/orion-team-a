@@ -13,4 +13,5 @@ public:
 	bool createEmployee(Employee& employee);
 	void printToCSV(const std::string& filename) const;
 	Employee getEmployee(long id);
+	bool emailExists(const std::string& email);
 };

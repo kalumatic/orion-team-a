@@ -53,8 +53,7 @@ bool IncidentService::createIncident(
         );
         m_incidents.push_back(incident);
         return true;
-        //Send to backend
-        //return sendIncidentToBackend(incident);
+
     }
     catch (const std::exception& e)
     {

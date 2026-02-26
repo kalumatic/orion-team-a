@@ -4,7 +4,7 @@
 
 using namespace std;
 
-CLI::CLI(EmployeeService& employeeService, DeviceService& deviceService): employeeService(employeeService), deviceService(deviceService) {}
+CLI::CLI(EmployeeService& employeeService, DeviceService& deviceService) : employeeService(employeeService), deviceService(deviceService) {}
 
 
 void CLI::run() {
@@ -29,7 +29,6 @@ void CLI::run() {
 			break;
 
 		case 3:
-			cout << "Selected option-> 3\n";
 			createEmployee();//not implemented
 			break;
 
@@ -45,8 +44,6 @@ void CLI::run() {
 
 		case 6:
 			syncEmployeesWithBackend();//not implemented
-			cout << "Selected option-> 6\n";
-			syncDevicesWithBackend();//not implemented
 			break;
 
 		default:
@@ -69,7 +66,7 @@ void CLI::showMenu() {
 	cout << "0)Exit\n";
 }
 
-void CLI::createIncident(){}
+void CLI::createIncident() {}
 void CLI::createDevice() {
 	string type;
 	string model;
@@ -84,7 +81,7 @@ void CLI::createDevice() {
 		cout << "Device type is mandatory - Enter device type\n";
 		getline(cin, type);
 	}
-	
+
 	cout << "Enter Device model\n";
 	getline(cin, model);
 	while (model.empty()) {
@@ -92,7 +89,7 @@ void CLI::createDevice() {
 		cout << "Device model is mandatory - Enter device model\n";
 		getline(cin, model);
 	}
-	
+
 	cout << "Enter Device serial number\n";
 	getline(cin, serialNumber);
 	while (serialNumber.empty()) {
@@ -100,7 +97,7 @@ void CLI::createDevice() {
 		cout << "Device serialNumber is mandatory - Enter device serialNumber\n";
 		getline(cin, serialNumber);
 	}
-	
+
 	cout << "Enter employee mail\n";
 	getline(cin, mail);
 	while (!Employee::isValidEmail(mail)) {
@@ -108,7 +105,7 @@ void CLI::createDevice() {
 		cout << "Employee mail is mandatory - Enter employee email\n";
 		getline(cin, mail);
 	}
-	
+
 	long id = employeeService.fetchAndSearchAllEmployes(mail);
 	cout << id;
 	if (id <= 0) {
@@ -156,20 +153,14 @@ void CLI::createEmployee() {
 	Employee employee(name, lastname, mail);
 	employeeService.createEmployee(employee);
 }
-void CLI::storeEnteriesIntoDB(){}
-void CLI::trackNewIncidents(){}
-void CLI::syncEmployeesWithBackend(){
+void CLI::storeEnteriesIntoDB() {}
+void CLI::trackNewIncidents() {}
+void CLI::syncEmployeesWithBackend() {
 	string filename;
-	
+
 	cout << "Enter file name\n";
 	getline(cin, filename);//for reading leftover input from Menu
 	getline(cin, filename);
 
 	employeeService.printToCSV(filename);
 }
-
-void CLI::createDevice(){}
-void CLI::createEmployee(){}
-void CLI::storeEnteriesIntoDB(){}
-void CLI::trackNewIncidents(){}
-void CLI::syncDevicesWithBackend(){}

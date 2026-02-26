@@ -132,6 +132,8 @@
     <ClCompile Include="DeviceService.cpp" />
     <ClCompile Include="Employee.cpp" />
     <ClCompile Include="EmployeeService.cpp" />
+    <ClCompile Include="Incident.cpp" />
+    <ClCompile Include="IncidentService.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -141,6 +143,8 @@
     <ClInclude Include="DeviceService.h" />
     <ClInclude Include="Employee.h" />
     <ClInclude Include="EmployeeService.h" />
+    <ClInclude Include="Incident.h" />
+    <ClInclude Include="IncidentService.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

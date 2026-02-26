@@ -1,3 +1,4 @@
+
 #include "DeviceService.h"
 #include <iostream>
 
@@ -12,7 +13,7 @@ bool DeviceService::createDevice(Device& device) {
         return false;
     }
 
-   // nlohmann::json jsonData = device.toJson();
+    // nlohmann::json jsonData = device.toJson();
     nlohmann::json jsonData;
     jsonData["deviceType"] = device.getType();
     jsonData["model"] = device.getModel();
@@ -36,7 +37,7 @@ bool DeviceService::createDevice(Device& device) {
 
 bool DeviceService::fetchAndSearchAllDevices(const string serialNumber) {
     allDevices.clear();
-    
+
     auto response = cpr::Get(
         cpr::Url{ "http://localhost:8080/api/devices/all" }
     );

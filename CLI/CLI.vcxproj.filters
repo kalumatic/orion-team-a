@@ -33,6 +33,12 @@
     <ClCompile Include="DeviceService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Incident.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IncidentService.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CLI.h">
@@ -51,6 +57,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DeviceService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Incident.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IncidentService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
