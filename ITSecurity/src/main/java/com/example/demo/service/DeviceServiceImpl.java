@@ -13,8 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -60,6 +64,23 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public byte[] exportDevicesCsv() {
+        List<Device> devices = deviceRepository.findAll();
+        StringBuilder csv = new StringBuilder();
+        csv.append("id,deviceType,model,serialNumber,assignedEmployeeId,assignmentDate\n");
+
+        for (Device device : devices) {
+            csv.append(toCsvValue(device.getId())).append(',')
+                    .append(toCsvValue(device.getDeviceType())).append(',')
+                    .append(toCsvValue(device.getModel())).append(',')
+                    .append(toCsvValue(device.getSerialNumber())).append(',')
+                    .append(toCsvValue(device.getAssignedEmployee() != null ? device.getAssignedEmployee().getId() : null)).append(',')
+                    .append(toCsvValue(device.getAssignmentDate()))
+                    .append('\n');
+        }
+
+        return csv.toString().getBytes(StandardCharsets.UTF_8);
     public BulkDeviceInsertResponseDTO createDevicesBulk(List<DeviceRequestDTO> requests) {
         BulkDeviceInsertResponseDTO response = new BulkDeviceInsertResponseDTO(new ArrayList<>(), new ArrayList<>());
         if (requests == null || requests.isEmpty()) {
@@ -168,6 +189,24 @@ public class DeviceServiceImpl implements DeviceService {
         return new DeviceResponseDTO(device);
     }
 
+    private String toCsvValue(Object value) {
+        if (value == null) {
+            return "";
+        }
+
+        String strValue;
+        if (value instanceof LocalDate date) {
+            strValue = date.toString();
+        } else {
+            strValue = value.toString();
+        }
+
+        boolean mustQuote = strValue.contains(",") || strValue.contains("\"") || strValue.contains("\n") || strValue.contains("\r");
+        if (!mustQuote) {
+            return strValue;
+        }
+
+        return "\"" + strValue.replace("\"", "\"\"") + "\"";
     private List<String> validateBulkRequest(DeviceRequestDTO dto, Set<String> batchSerialNumbers) {
         List<String> errors = new ArrayList<>();
         if (dto == null) {

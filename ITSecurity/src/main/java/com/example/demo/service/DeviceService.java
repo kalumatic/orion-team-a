@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface DeviceService {
     DeviceResponseDTO createDevice(DeviceRequestDTO request);
+    byte[] exportDevicesCsv();
     BulkDeviceInsertResponseDTO createDevicesBulk(List<DeviceRequestDTO> requests);
     DeviceResponseDTO updateDevice(Long id, DeviceRequestDTO request);
     DeviceResponseDTO getDeviceById(Long id);
