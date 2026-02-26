@@ -24,4 +24,5 @@ public interface IncidentService {
 
     BulkIncidentImportResult importIncidentsBulk(BulkIncidentImportRequest request);
 
+    String exportAllIncidentsToCsv();
 }

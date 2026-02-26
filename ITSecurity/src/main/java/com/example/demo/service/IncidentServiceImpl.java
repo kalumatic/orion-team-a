@@ -238,6 +238,39 @@ public class IncidentServiceImpl implements IncidentService{
         return new BulkIncidentImportResult(successfulIds, failedRecords);
     }
 
+
+
+
+
+
+    @Override
+    public String exportAllIncidentsToCsv() {
+        List<IncidentResponseDTO> incidents = getAllIncidents(null, null, null);
+
+        incidents.sort(Comparator.comparing(IncidentResponseDTO::getId));
+
+        StringBuilder csv = new StringBuilder();
+        csv.append("id,description,incident_Date,severity,status,device_Id,reported_Id\n");
+
+        for (IncidentResponseDTO dto : incidents) {
+            csv.append(dto.getId()).append(",")
+                    .append(dto.getDescription()).append(",")
+                    .append(dto.getIncidentDate()).append(",")
+                    .append(dto.getSeverity()).append(",")
+                    .append(dto.getStatus()).append(",")
+                    .append(dto.getDeviceId()).append(",")
+                    .append(dto.getReporterId()).append(",")
+                    .append("\n");
+        }
+
+        return csv.toString();
+    }
+
+
+
+
+
+
     private void addFailed(List<FailedIncidentRecord> failedRecords,
                            BulkIncidentImportRequest.IncidentImportItem item,
                            String errorMessage) {
@@ -260,4 +293,5 @@ public class IncidentServiceImpl implements IncidentService{
         if (item.getDeviceSerialNumber() == null || item.getDeviceSerialNumber().isBlank()) return "Device serial number is required";
         return null;
     }
+
 }
