@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.request.BulkIncidentImportRequest;
 import com.example.demo.dto.request.IncidentImportRequest;
 import com.example.demo.dto.request.IncidentRequestDTO;
+import com.example.demo.dto.response.BulkIncidentImportResult;
 import com.example.demo.dto.response.IncidentResponseDTO;
 
 import java.util.List;
@@ -19,4 +21,7 @@ public interface IncidentService {
     IncidentResponseDTO updateIncident(Long id, IncidentRequestDTO dto);
 
     void deleteIncident(Long id);
+
+    BulkIncidentImportResult importIncidentsBulk(BulkIncidentImportRequest request);
+
 }

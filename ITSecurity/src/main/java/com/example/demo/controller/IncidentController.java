@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.request.BulkIncidentImportRequest;
 import com.example.demo.dto.request.IncidentImportRequest;
 import com.example.demo.dto.request.IncidentRequestDTO;
+import com.example.demo.dto.response.BulkIncidentImportResult;
 import com.example.demo.dto.response.IncidentResponseDTO;
 import com.example.demo.service.IncidentService;
 import jakarta.validation.Valid;
@@ -61,4 +63,13 @@ public class IncidentController {
         incidentService.deleteIncident(id);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
+
+    @PostMapping(value = "/bulk/import", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<BulkIncidentImportResult> importIncidentsBulk(
+            @Valid @RequestBody BulkIncidentImportRequest request
+    ) {
+        BulkIncidentImportResult result = incidentService.importIncidentsBulk(request);
+        return ResponseEntity.ok(result);
+    }
+
 }
