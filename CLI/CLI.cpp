@@ -1,5 +1,6 @@
 #include "CLI.h"
 #include <iostream>
+#include "Employee.h"
 
 using namespace std;
 
@@ -65,6 +66,7 @@ void CLI::showMenu() {
 }
 
 void CLI::createIncident(){}
+
 void CLI::createDevice(){}
 void CLI::createEmployee(){}
 void CLI::storeEnteriesIntoDB(){}

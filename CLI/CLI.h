@@ -2,7 +2,6 @@
 
 
 class CLI {
-private:
 	void showMenu();
 	void createIncident();
 	void createDevice();
