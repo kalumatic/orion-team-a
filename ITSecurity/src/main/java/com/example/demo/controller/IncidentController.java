@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.request.AiIncidentGenerateRequest;
 import com.example.demo.dto.request.IncidentImportRequest;
 import com.example.demo.dto.request.IncidentRequestDTO;
+import com.example.demo.dto.response.AiIncidentGenerateResponse;
 import com.example.demo.dto.response.IncidentResponseDTO;
 import com.example.demo.service.IncidentService;
 import jakarta.validation.Valid;
@@ -30,6 +32,12 @@ public class IncidentController {
     public ResponseEntity<IncidentResponseDTO> importIncident(@Valid @RequestBody IncidentImportRequest dto) {
         IncidentResponseDTO saved = incidentService.importIncident(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
+    @PostMapping("/ai-generate")
+    public ResponseEntity<AiIncidentGenerateResponse> generateWithAi(@Valid @RequestBody AiIncidentGenerateRequest request) {
+        AiIncidentGenerateResponse response = incidentService.generateIncidentsWithAi(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
