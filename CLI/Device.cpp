@@ -1,0 +1,78 @@
+#include "Device.h"
+#include <iostream>
+
+
+
+Device::Device(const string& type, const string& model, const string& serialNumber, Employee& employee):employee(employee){
+	if (type.empty()) {
+		cout << "Device type is mandatory - Enter device type\n";
+		throw std::invalid_argument("Invalid device type");
+	}
+
+	if (model.empty()) {
+		cout << "Device model is mandatory - Enter device model\n";
+		throw std::invalid_argument("Invalid device model");
+	}
+
+	if (serialNumber.empty()) {
+		cout << "Device serialNumber is mandatory - Enter device serialNumber\n";
+		throw std::invalid_argument("Invalid device serialNumber");
+	}
+
+	this->type = type;
+	this->model = model;
+	this->serialNumber = serialNumber;
+}
+
+json Device::toJson() const {
+	json json;
+
+	json["type"] = type;
+	json["model"] = model;
+	json["serialNumber"] = serialNumber;
+	json["employee"] = employee.toJson();
+	
+
+	return json;
+}
+
+/*bool Device::isTypeValid(const string& type) {
+	if (type.empty()) {
+		cout << "Device type is mandatory - Enter device type\n";
+		return false;
+	}
+
+	return true;
+}
+
+
+bool Device::isModelValid(const string& model) {
+	if (model.empty()) {
+		cout << "Device model is mandatory - Enter device model\n";
+		return false;
+	}
+
+	return true;
+}
+
+
+bool Device::isSerialNumberValid(const string& serialNumber) {
+	if (serialNumber.empty()) {
+		cout << "Device serial number is mandatory - Enter serial number type\n";
+		return false;
+	}
+
+	return true;
+}
+
+
+bool Device::isEmployeeValid(Employee* employee) {
+	if (employee == nullptr) {
+		cout << "Employee assigned to device is mandatory - Enter employee first\n";
+		return false;
+	}
+
+	return true;
+}*/
+
+//Device::~Device() {}
