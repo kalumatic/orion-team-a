@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.request.BulkImportRequest;
 import com.example.demo.dto.request.CreateEmployeeRequest;
+import com.example.demo.dto.response.BulkImportResult;
 import com.example.demo.dto.response.EmployeeResponse;
 import com.example.demo.service.EmployeeService;
 import jakarta.validation.Valid;
@@ -74,5 +76,12 @@ public class EmployeeController {
                 .contentType(new MediaType("text", "csv"))
                 .contentLength(bytes.length)
                 .body(bytes);
+    }
+
+    @PostMapping("/bulk/import")
+    public ResponseEntity<BulkImportResult> importEmployees(
+            @Valid @RequestBody BulkImportRequest request) {
+        BulkImportResult result = employeeService.importEmployees(request);
+        return ResponseEntity.ok(result);
     }
 }
