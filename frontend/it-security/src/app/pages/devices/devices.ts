@@ -68,6 +68,7 @@ export class Devices implements AfterViewInit, OnInit {
   ) {}
 
   ngOnInit() {
+    this.initializeFilter(); // add this
     this.employeeService.getAllUnpaged().subscribe({
       next: (employees) => {
         employees.forEach(emp => {
@@ -76,6 +77,25 @@ export class Devices implements AfterViewInit, OnInit {
       },
       error: () => {} // interceptor handles it
     });
+  }
+  private initializeFilter() {
+    this.dataSource.filterPredicate = (data: DeviceResponse, filter: string) => {
+      const search = JSON.parse(filter);
+
+      const matchesDate =
+        !search.date ||
+        data.assignmentDate === search.date;
+
+      const matchesSerial =
+        !search.serialNumber ||
+        data.serialNumber.toLowerCase().includes(search.serialNumber);
+
+      const matchesType =
+        !search.deviceType ||
+        data.deviceType.toLowerCase().includes(search.deviceType);
+
+      return matchesDate && matchesSerial && matchesType;
+    };
   }
 
   ngAfterViewInit() {
