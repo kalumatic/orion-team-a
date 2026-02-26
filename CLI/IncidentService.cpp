@@ -14,7 +14,7 @@ IncidentService::IncidentService(const std::string& backendUrl)
 {
 }
 
-bool IncidentService::createAndSendIncident(
+bool IncidentService::createIncident(
     const std::string& reporterEmail,
     const std::string& deviceSerial,
     const std::string& description,
@@ -51,9 +51,10 @@ bool IncidentService::createAndSendIncident(
             severity,
             status
         );
-
-        // 7️⃣ Send to backend
-        return sendIncidentToBackend(incident);
+        m_incidents.push_back(incident);
+        return true;
+        //Send to backend
+        //return sendIncidentToBackend(incident);
     }
     catch (const std::exception& e)
     {

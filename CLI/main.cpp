@@ -17,7 +17,7 @@ int main() {
     
         IncidentService service("http://localhost:8080");
 
-        bool success = service.createAndSendIncident(
+        bool success = service.createIncident(
             "johne@email.com",      // must exist in DB
             "SERIAL123",               // MUST EXIST in DB
             "Test incident from C++",
