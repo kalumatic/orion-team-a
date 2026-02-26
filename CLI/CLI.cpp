@@ -4,7 +4,10 @@
 
 using namespace std;
 
-CLI::CLI(EmployeeService& employeeService, DeviceService& deviceService) : employeeService(employeeService), deviceService(deviceService) {}
+CLI::CLI(EmployeeService& employeeService, DeviceService& deviceService, IncidentService& incidentService)
+	: employeeService(employeeService),
+	deviceService(deviceService),
+	incidentService(incidentService){}
 
 
 void CLI::run() {
@@ -19,26 +22,24 @@ void CLI::run() {
 		case 0:
 			return;
 		case 1:
-			cout << "Selected option-> 1\n";
 			createIncident();//not implemented
 			break;
 
 		case 2:
-			cout << "Selected option-> 2\n";;
-			createDevice();//not implemented
+			
+			createDevice();
 			break;
 
 		case 3:
-			createEmployee();//not implemented
+			createEmployee();
 			break;
 
 		case 4:
-			cout << "Selected option-> 4\n";
 			storeEnteriesIntoDB();//not implemented
 			break;
 
 		case 5:
-			cout << "Selected option-> 5\n";
+		
 			trackNewIncidents();//not implemented
 			break;
 
@@ -66,7 +67,60 @@ void CLI::showMenu() {
 	cout << "0)Exit\n";
 }
 
-void CLI::createIncident() {}
+void CLI::createIncident() {
+
+	string mail;
+	string serialNumber;
+	string description;
+	string status;
+	string severity;
+
+	cout << "Enter employee mail\n";
+	getline(cin, mail);
+	getline(cin, mail);
+	while (!Employee::isValidEmail(mail)) {
+		if (mail == "0") return;
+		cout << "Employee mail is mandatory - Enter employee email\n";
+		getline(cin, mail);
+	}
+
+	cout << "Enter Device serial number\n";
+	getline(cin, serialNumber);
+	while (serialNumber.empty()) {
+		if (serialNumber == "0") return;
+		cout << "Device serialNumber is mandatory - Enter device serialNumber\n";
+		getline(cin, serialNumber);
+	}
+
+	cout << "Enter incident description\n";
+	getline(cin, description);
+	while (description.empty()) {
+		if (description == "0") return;
+		cout << "Incident description is mandatory - Enter incident description\n";
+		getline(cin, description);
+	}
+
+	cout << "Enter incident status: Open|Closed|In Progress\n";
+	getline(cin, status);
+	while (status.empty()) {
+		if (status == "0") return;
+		cout << "Incident status is mandatory - Enter incident status\n";
+		getline(cin, status);
+	}
+
+	cout << "Enter incident severity: Low|Medium|High|Critical\n";
+	getline(cin, severity);
+	while (severity.empty()) {
+		if (severity == "0") return;
+		cout << "Incident status is severity - Enter incident severity\n";
+		getline(cin, severity);
+	}
+
+	incidentService.createIncident(mail, serialNumber, description, severity, status);
+
+
+}
+
 void CLI::createDevice() {
 	string type;
 	string model;
@@ -153,7 +207,10 @@ void CLI::createEmployee() {
 	Employee employee(name, lastname, mail);
 	employeeService.createEmployee(employee);
 }
-void CLI::storeEnteriesIntoDB() {}
+void CLI::storeEnteriesIntoDB() {
+
+	incidentService.sendIncidentToBackend();
+}
 void CLI::trackNewIncidents() {}
 void CLI::syncEmployeesWithBackend() {
 	string filename;

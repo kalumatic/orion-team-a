@@ -51,11 +51,7 @@ bool DeviceService::fetchAndSearchAllDevices(const string serialNumber) {
 
     //cout << jsonData.dump();
     for (const auto& item : jsonData) {
-        //Employee employee(
-        //    item.at("firstName").get<std::string>(),
-        //    item.at("lastName").get<std::string>(),
-        //    item.at("email").get<std::string>()
-        //);
+ 
         long employeeId = item.at("assignedEmployee");
         Employee employee = employeeService.getEmployee(employeeId);
         Device device(

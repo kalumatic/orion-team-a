@@ -2,24 +2,15 @@
 #include "Employee.h"
 #include "EmployeeService.h"
 #include "IncidentService.h"
+#include "CLI.h"
 
 int main() {
+    EmployeeService emService;
+    DeviceService dService(emService);
+    IncidentService service(emService, dService);
 
-    IncidentService service("http://localhost:8080");
-
-    bool success = service.createIncident(
-        "dimi@gmail.com",
-        "12345",              
-        "Test incident from C++",
-        "High",
-        "Open"
-    );
-
-    if (success)
-        std::cout << "Incident created successfully.\n";
-    else
-        std::cout << "Failed to create incident.\n";
-
+    CLI terminal(emService, dService, service);
+    terminal.run();
     return 0;
 
 }

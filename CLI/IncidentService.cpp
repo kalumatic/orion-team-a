@@ -8,9 +8,9 @@
 
 using json = nlohmann::json;
 
-IncidentService::IncidentService(const std::string& backendUrl)
-    : m_backendUrl(backendUrl),
-      m_employeeService()
+IncidentService::IncidentService(EmployeeService& empolyeeService, DeviceService& deviceServise)
+    : m_employeeService(empolyeeService),
+    m_deviceService(deviceServise)
 {
 }
 
@@ -31,6 +31,9 @@ bool IncidentService::createIncident(
 
      
         if (!m_employeeService.fetchAllEmployees())
+            return false;
+
+        if (!m_deviceService.fetchAndSearchAllDevices(deviceSerial))
             return false;
 
 
@@ -61,8 +64,10 @@ bool IncidentService::createIncident(
         return false;
     }
 }
-bool IncidentService::sendIncidentToBackend(const Incident& incident)
+//TODO
+bool IncidentService::sendIncidentToBackend()
 {
+    for (auto incident : m_incidents) {
     // Convert the Incident to JSON
     nlohmann::json jsonData = incident.toJson();
 
@@ -77,12 +82,15 @@ bool IncidentService::sendIncidentToBackend(const Incident& incident)
     if (response.status_code == 200 || response.status_code == 201)
     {
         std::cout << "Incident sent successfully.\n";
-        return true;
     }
+    else {
+        std::cerr << "Error sending incident: " << response.status_code << "\n";
+        std::cerr << response.text << "\n";
+        return false;
+        }
+    }
+    m_incidents.clear();
 
-    std::cerr << "Error sending incident: " << response.status_code << "\n";
-    std::cerr << response.text << "\n";
-    return false;
 }
 
 Incident::Severity IncidentService::parseSeverity(const std::string& str)

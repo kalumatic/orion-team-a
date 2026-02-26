@@ -1,10 +1,12 @@
 #pragma once
 #include "DeviceService.h"
 #include "EmployeeService.h"
+#include "IncidentService.h"
 
 class CLI {
 	DeviceService& deviceService;
 	EmployeeService& employeeService;
+	IncidentService& incidentService;
 	void showMenu();
 	void createIncident();
 	void createDevice();
@@ -13,6 +15,6 @@ class CLI {
 	void trackNewIncidents();
 	void syncEmployeesWithBackend();
 public:
-	CLI(EmployeeService& employeeService, DeviceService& deviceService);
+	CLI(EmployeeService& employeeService, DeviceService& deviceService, IncidentService& incidentService);
 	void run();
 };

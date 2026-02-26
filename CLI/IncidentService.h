@@ -4,11 +4,12 @@
 #include <vector>
 #include <string>
 #include "EmployeeService.h"
+#include "DeviceService.h"
 
 class IncidentService
 {
 public:
-    IncidentService(const std::string& backendUrl);
+    IncidentService(EmployeeService& empolyeeService, DeviceService& deviceServise);
 
     // Tries to create and send an incident
     bool createIncident(const std::string& reporter,
@@ -17,10 +18,11 @@ public:
         const std::string& severityStr,
         const std::string& status);
 
-    bool sendIncidentToBackend(const Incident& incident);
+    bool sendIncidentToBackend();
 private:
     std::string m_backendUrl;
-    EmployeeService m_employeeService;
+    EmployeeService& m_employeeService;
+    DeviceService& m_deviceService;
 
     // Helper: validate device & employee
     bool validateInput(const std::string& reporter, const std::string& device,
