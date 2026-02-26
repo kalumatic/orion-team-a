@@ -25,8 +25,8 @@ public:
     Incident(const std::string& reporter,
         const std::string& device,
         const std::string& description,
-        const std::string& severity,
-        const std::string& status);
+        const Severity& severity,
+        const Status& status);
 
     const std::string getEmployee();
     const std::string getDevice();
@@ -35,12 +35,6 @@ public:
     const Severity getSeverity();
     const Status getStatus();
     nlohmann::json toJson() const;
-
-private:
-    static bool isValidEmpolyee(const std::string& e);
-    static bool isValidDevice(const std::string& d);
-    static Severity parseSeverity(const std::string& str);
-    static Status parseStatus(const std::string& str);
 
 private:
     std::string m_reporter;

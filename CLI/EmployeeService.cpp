@@ -2,6 +2,8 @@
 #include <fstream>
 #include <cpr/cpr.h>
 #include <iostream>
+#include "json.hpp"
+
 
 
 
@@ -33,7 +35,7 @@ bool EmployeeService::fetchAllEmployees(){
 }
 
 
-bool EmployeeService::createEmployee(Employee& employee){
+bool EmployeeService::createEmployee(const Employee& employee){
     nlohmann::json jsonData = employee.toJson();
 
     auto response = cpr::Post(
@@ -50,6 +52,19 @@ bool EmployeeService::createEmployee(Employee& employee){
     std::cerr << response.text << "\n";
     return false;
 }
+
+bool EmployeeService::emailExists(const std::string& email)
+{
+
+    for (const auto& emp : allEmployees)
+    {
+        if (emp.getEmail() == email)
+            return true;
+    }
+
+    return false;
+}
+
 
 
 //OCEKUJE SE DATE I TIME POZIVA KOMANDE

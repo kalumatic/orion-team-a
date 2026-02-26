@@ -127,22 +127,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\CLI\CLI.cpp" />
-    <ClCompile Include="..\CLI\Device.cpp" />
-    <ClCompile Include="..\CLI\Employee.cpp" />
-    <ClCompile Include="..\CLI\EmployeeService.cpp" />
-    <ClCompile Include="..\CLI\Incident.cpp" />
-    <ClCompile Include="..\CLI\IncidentService.cpp" />
-    <ClCompile Include="..\CLI\main.cpp" />
+    <ClCompile Include="CLI.cpp" />
+    <ClCompile Include="Employee.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Incident.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\CLI\CLI.h" />
-    <ClInclude Include="..\CLI\Device.h" />
-    <ClInclude Include="..\CLI\Employee.h" />
-    <ClInclude Include="..\CLI\EmployeeService.h" />
-    <ClInclude Include="..\CLI\Incident.h" />
-    <ClInclude Include="..\CLI\IncidentService.h" />
-    <ClInclude Include="..\CLI\json.hpp" />
+    <ClInclude Include="CLI.h" />
+    <ClInclude Include="Employee.h" />
+    <ClInclude Include="Incident.h" />
+    <ClInclude Include="json.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

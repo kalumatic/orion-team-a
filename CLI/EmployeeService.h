@@ -11,6 +11,7 @@ class EmployeeService {
 public:
 	EmployeeService() {};
 	bool fetchAllEmployees();
-	bool createEmployee(Employee& employee);
+	bool createEmployee(const Employee& employee);
 	void printToCSV(const string& filename) const;
+	bool emailExists(const std::string& email);
 };

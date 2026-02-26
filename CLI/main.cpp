@@ -10,29 +10,26 @@ int main() {
 #include <iostream>
 #include "Employee.h"
 #include "EmployeeService.h"
+#include "IncidentService.h"
 //#include "Device.h"
 
 int main() {
-    try {
-        //Employee emp("Johne", "Doe", "johne@email.com");
+    
+        IncidentService service("http://localhost:8080");
 
-        //auto j = emp.toJson();
+        bool success = service.createAndSendIncident(
+            "johne@email.com",      // must exist in DB
+            "SERIAL123",               // MUST EXIST in DB
+            "Test incident from C++",
+            "High",
+            "Open"
+        );
 
-        EmployeeService eSerivce;
+        if (success)
+            std::cout << "Incident created successfully.\n";
+        else
+            std::cout << "Failed to create incident.\n";
 
-        //bool testCreate = eSerivce.createEmployee(emp);
-
-        //cout << testCreate << "\n";
-
-       // bool testFetch = eSerivce.fetchAllEmployees();
-
-        //cout << !testFetch << "\n";
-
-        eSerivce.printToCSV("test");
-
-       // std::cout << j.dump(4) << std::endl;   
-    }
-    catch (const std::exception& ex) {
-        std::cerr << "Error: " << ex.what() << std::endl;
-    }
+        return 0;
+    
 }
