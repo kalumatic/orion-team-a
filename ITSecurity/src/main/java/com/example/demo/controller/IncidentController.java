@@ -8,7 +8,9 @@ import com.example.demo.dto.response.IncidentResponseDTO;
 import com.example.demo.service.IncidentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,6 +72,18 @@ public class IncidentController {
     ) {
         BulkIncidentImportResult result = incidentService.importIncidentsBulk(request);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(value = "/bulk/export", produces = "text/csv")
+    public ResponseEntity<byte[]> exportAllIncidentsCsv() {
+        String csv = incidentService.exportAllIncidentsToCsv();
+        byte[] bytes = csv.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"incidents.csv\"")
+                .contentType(new MediaType("text", "csv"))
+                .contentLength(bytes.length)
+                .body(bytes);
     }
 
 }
