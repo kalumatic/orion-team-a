@@ -1,17 +1,16 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.IncidentImportDTO;
-import com.example.demo.dto.IncidentRequestDTO;
-import com.example.demo.dto.IncidentResponseDTO;
+import com.example.demo.dto.request.IncidentImportRequest;
+import com.example.demo.dto.request.IncidentRequestDTO;
+import com.example.demo.dto.response.IncidentResponseDTO;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface IncidentService {
 
     IncidentResponseDTO createIncident(IncidentRequestDTO req);
 
-    IncidentResponseDTO importIncident(IncidentImportDTO dto);
+    IncidentResponseDTO importIncident(IncidentImportRequest dto);
 
     List<IncidentResponseDTO> getAllIncidents(String date, String serialNumber, String deviceType);
 

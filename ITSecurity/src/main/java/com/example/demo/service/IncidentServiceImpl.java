@@ -1,8 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.IncidentImportDTO;
-import com.example.demo.dto.IncidentRequestDTO;
-import com.example.demo.dto.IncidentResponseDTO;
+import com.example.demo.dto.request.IncidentImportRequest;
+import com.example.demo.dto.request.IncidentRequestDTO;
+import com.example.demo.dto.response.IncidentResponseDTO;
 import com.example.demo.entity.Device;
 import com.example.demo.entity.Employee;
 import com.example.demo.entity.Incident;
@@ -12,16 +12,12 @@ import com.example.demo.exceptions.ValidationException;
 import com.example.demo.repository.DeviceRepository;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.repository.IncidentRepository;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.lang.module.ResolutionException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,7 +57,7 @@ public class IncidentServiceImpl implements IncidentService{
     }
 
     @Override
-    public IncidentResponseDTO importIncident(IncidentImportDTO dto) {
+    public IncidentResponseDTO importIncident(IncidentImportRequest dto) {
 
         Employee reporter = employeeRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Employee nije pronadjen"));
 
