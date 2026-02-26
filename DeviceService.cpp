@@ -6,12 +6,18 @@ using namespace std;
 DeviceService::DeviceService(EmployeeService& employeeService) :employeeService(employeeService) {}
 
 bool DeviceService::createDevice(Device& device) {
-    if (!employeeService.fetchAndSearchAllEmployes(device.getEmployee().getEmail())) {
+    long employeeId = employeeService.fetchAndSearchAllEmployes(device.getEmployee().getEmail());
+    if (employeeId <= 0) {
         std::cerr << "Employee does not exist\n";
         return false;
     }
 
-    nlohmann::json jsonData = device.toJson();
+   // nlohmann::json jsonData = device.toJson();
+    nlohmann::json jsonData;
+    jsonData["deviceType"] = device.getType();
+    jsonData["model"] = device.getModel();
+    jsonData["serialNumber"] = device.getSerialNumber();
+    jsonData["assignedEmployeeId"] = employeeId;
 
     auto response = cpr::Post(
         cpr::Url{ "http://localhost:8080/api/devices" },
@@ -42,12 +48,15 @@ bool DeviceService::fetchAndSearchAllDevices(const string serialNumber) {
 
     auto jsonData = nlohmann::json::parse(response.text);
 
+    //cout << jsonData.dump();
     for (const auto& item : jsonData) {
-        Employee employee(
-            item.at("firstName").get<std::string>(),
-            item.at("lastName").get<std::string>(),
-            item.at("email").get<std::string>()
-        );
+        //Employee employee(
+        //    item.at("firstName").get<std::string>(),
+        //    item.at("lastName").get<std::string>(),
+        //    item.at("email").get<std::string>()
+        //);
+        long employeeId = item.at("assignedEmployee");
+        Employee employee = employeeService.getEmployee(employeeId);
         Device device(
             item.at("deviceType").get<std::string>(),
             item.at("model").get<std::string>(),
@@ -55,6 +64,7 @@ bool DeviceService::fetchAndSearchAllDevices(const string serialNumber) {
             employee
         );
         if (serialNumber == device.getSerialNumber()) {
+            cout << "Found device\n";
             return true;
         }
         allDevices.push_back(device);

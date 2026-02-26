@@ -67,7 +67,59 @@ void CLI::showMenu() {
 }
 
 void CLI::createIncident(){}
-void CLI::createDevice(){}
+void CLI::createDevice() {
+	string type;
+	string model;
+	string serialNumber;
+	string mail;
+
+	cout << "Enter Device type\n";
+	getline(cin, type);//for reading leftover input from Menu
+	getline(cin, type);
+	while (type.empty()) {
+		if (type == "0") return;
+		cout << "Device type is mandatory - Enter device type\n";
+		getline(cin, type);
+	}
+	
+	cout << "Enter Device model\n";
+	getline(cin, model);
+	while (model.empty()) {
+		if (model == "0") return;
+		cout << "Device model is mandatory - Enter device model\n";
+		getline(cin, model);
+	}
+	
+	cout << "Enter Device serial number\n";
+	getline(cin, serialNumber);
+	while (serialNumber.empty()) {
+		if (serialNumber == "0") return;
+		cout << "Device serialNumber is mandatory - Enter device serialNumber\n";
+		getline(cin, serialNumber);
+	}
+	
+	cout << "Enter employee mail\n";
+	getline(cin, mail);
+	while (!Employee::isValidEmail(mail)) {
+		if (mail == "0") return;
+		cout << "Employee mail is mandatory - Enter employee email\n";
+		getline(cin, mail);
+	}
+	
+	long id = employeeService.fetchAndSearchAllEmployes(mail);
+	cout << id;
+	if (id <= 0) {
+		cout << "Employee doesn't exist - Go to menu and create employee\n";
+		return;
+	}
+
+	Employee employee = employeeService.getEmployee(id);
+
+	Device device(type, model, serialNumber, employee);
+
+	deviceService.createDevice(device);
+
+}
 void CLI::createEmployee() {
 	string name;
 	string lastname;

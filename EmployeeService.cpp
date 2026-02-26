@@ -6,6 +6,27 @@
 
 using namespace std;
 
+Employee EmployeeService::getEmployee(long id) {
+    std::string url = "http://localhost:8080/api/employees/" + std::to_string(id);
+
+    auto response = cpr::Get(cpr::Url{ url });
+
+    if (response.status_code != 200) {
+        std::cerr << "Error: " << response.status_code << "\n";
+        return Employee();
+    }
+
+    auto jsonData = nlohmann::json::parse(response.text);
+
+    Employee emp(
+        jsonData.value("firstName", ""),
+        jsonData.value("lastName", ""),
+        jsonData.value("email", "")
+    );
+
+    return emp;
+}
+
 bool EmployeeService::fetchAllEmployees(){
     allEmployees.clear();
 
@@ -17,8 +38,11 @@ bool EmployeeService::fetchAllEmployees(){
         std::cerr << "Error: " << response.status_code << "\n";
         return false;
     }
+    
 
     auto jsonData = nlohmann::json::parse(response.text);
+
+    cout << jsonData.dump();
 
    for (const auto& item : jsonData) {
         Employee emp(
@@ -33,7 +57,7 @@ bool EmployeeService::fetchAllEmployees(){
     return true;
 }
 
-bool EmployeeService::fetchAndSearchAllEmployes(const string& email) {
+long EmployeeService::fetchAndSearchAllEmployes(const string& email) {
     allEmployees.clear();
 
     auto response = cpr::Get(
@@ -42,7 +66,7 @@ bool EmployeeService::fetchAndSearchAllEmployes(const string& email) {
 
     if (response.status_code != 200) {
         std::cerr << "Error: " << response.status_code << "\n";
-        return false;
+        return -1;
     }
 
     auto jsonData = nlohmann::json::parse(response.text);
@@ -54,12 +78,12 @@ bool EmployeeService::fetchAndSearchAllEmployes(const string& email) {
             item.at("email").get<std::string>()
         );
         if (email == emp.getEmail()) {
-            return true;
+            return item.at("id");
         }
         allEmployees.push_back(emp);
     }
 
-    return false;
+    return 0;
 }
 
 bool EmployeeService::createEmployee(Employee& employee){

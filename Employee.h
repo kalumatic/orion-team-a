@@ -12,13 +12,13 @@ using json = nlohmann::json;
 class Employee
 {
 private:
-    
     std::string m_name;
     std::string m_lastName;
     std::string m_email;
 public:
     Employee(){}
-    Employee(const std::string& name,
+    Employee(
+             const std::string& name,
              const std::string& lastName,
              const std::string& email);
 

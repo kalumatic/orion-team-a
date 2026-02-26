@@ -18,6 +18,7 @@ Employee::Employee(const std::string& name,const std::string& lastName, const st
         if (!isValidEmail(email))
             throw std::invalid_argument("Invalid email address");
 
+
         m_name = name;
         m_lastName = lastName;
         m_email = email;

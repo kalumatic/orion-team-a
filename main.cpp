@@ -14,11 +14,27 @@ using namespace std;
 
 int main() {
     try {
-        EmployeeService employeeService;
-        DeviceService devService(employeeService);
-        CLI terminal(employeeService, devService);
+       EmployeeService employeeService;
+       //Employee emp("dim", "Doe", "dim@email.com");
+       //if (employeeService.createEmployee(emp)) {
+           //Device device("laptop", "LenovoThinkPad", "1444", emp);
+           DeviceService devService(employeeService);
+           CLI terminal(employeeService, devService);
 
-        terminal.run();
+           terminal.run();
+           //devService.createDevice(device);
+
+          // devService.fetchAndSearchAllDevices("1444");
+       //}
+
+        //Employee emp("Jane", "Doe", "jane@email.com");
+       // employeeService.fetchAllEmployees();
+       
+
+        
+        //CLI terminal(employeeService, devService);
+
+        //terminal.run();
         //Employee emp("Johne", "Doe", "johne@email.com");
 
         //auto j = emp.toJson();

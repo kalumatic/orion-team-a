@@ -24,13 +24,24 @@ Device::Device(const string& type, const string& model, const string& serialNumb
 	this->serialNumber = serialNumber;
 }
 
+
+
+string Device::getType() const {
+	return this->type;
+}
+
+string Device::getModel() const {
+	return this->model;
+}
+
+
 json Device::toJson() const {
 	json json;
 
-	json["type"] = type;
-	json["model"] = model;
-	json["serialNumber"] = serialNumber;
-	json["employee"] = employee.toJson();
+	json["deviceType"] = this->type;
+	json["model"] = this->model;
+	json["serialNumber"] = this->serialNumber;
+	json["assignedEmployee"] = this->employee.toJson();
 	
 
 	return json;
