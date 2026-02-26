@@ -104,12 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-<<<<<<< HEAD
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
-=======
       <LanguageStandard>stdcpp20</LanguageStandard>
->>>>>>> feature/cli-mergingBranch
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,7 +128,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CLI.cpp" />
-<<<<<<< HEAD
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="DeviceService.cpp" />
     <ClCompile Include="Employee.cpp" />
@@ -147,17 +141,6 @@
     <ClInclude Include="DeviceService.h" />
     <ClInclude Include="Employee.h" />
     <ClInclude Include="EmployeeService.h" />
-=======
-    <ClCompile Include="Employee.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Incident.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CLI.h" />
-    <ClInclude Include="Employee.h" />
-    <ClInclude Include="Incident.h" />
-    <ClInclude Include="json.hpp" />
->>>>>>> feature/cli-mergingBranch
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,11 +7,6 @@
 
 using json = nlohmann::json;
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> feature/cli-mergingBranch
 Employee::Employee(const std::string& name,const std::string& lastName, const std::string& email)
     {
         if (!isValidName(name))
@@ -23,10 +18,6 @@ Employee::Employee(const std::string& name,const std::string& lastName, const st
         if (!isValidEmail(email))
             throw std::invalid_argument("Invalid email address");
 
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/cli-mergingBranch
         m_name = name;
         m_lastName = lastName;
         m_email = email;
@@ -64,10 +55,6 @@ bool Employee::isValidEmail(const std::string& email) {
     return true;
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> feature/cli-mergingBranch
 std::string Employee::toJson(const std::string& filename) const
 {
     json j = {

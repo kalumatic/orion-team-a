@@ -4,12 +4,9 @@
 
 using namespace std;
 
-<<<<<<< HEAD
 CLI::CLI(EmployeeService& employeeService, DeviceService& deviceService): employeeService(employeeService), deviceService(deviceService) {}
 
 
-=======
->>>>>>> feature/cli-mergingBranch
 void CLI::run() {
 	int selectedOption;
 
@@ -32,10 +29,7 @@ void CLI::run() {
 			break;
 
 		case 3:
-<<<<<<< HEAD
-=======
 			cout << "Selected option-> 3\n";
->>>>>>> feature/cli-mergingBranch
 			createEmployee();//not implemented
 			break;
 
@@ -50,12 +44,9 @@ void CLI::run() {
 			break;
 
 		case 6:
-<<<<<<< HEAD
 			syncEmployeesWithBackend();//not implemented
-=======
 			cout << "Selected option-> 6\n";
 			syncDevicesWithBackend();//not implemented
->>>>>>> feature/cli-mergingBranch
 			break;
 
 		default:
@@ -74,16 +65,11 @@ void CLI::showMenu() {
 	cout << "3)Create Employee\n";
 	cout << "4)Store Enteries in DB\n";
 	cout << "5)Track New Incidents\n";
-<<<<<<< HEAD
 	cout << "6)Sync Employees with Backend\n";
-=======
-	cout << "6)Sync Devices with Backend\n";
->>>>>>> feature/cli-mergingBranch
 	cout << "0)Exit\n";
 }
 
 void CLI::createIncident(){}
-<<<<<<< HEAD
 void CLI::createDevice() {
 	string type;
 	string model;
@@ -181,11 +167,9 @@ void CLI::syncEmployeesWithBackend(){
 
 	employeeService.printToCSV(filename);
 }
-=======
 
 void CLI::createDevice(){}
 void CLI::createEmployee(){}
 void CLI::storeEnteriesIntoDB(){}
 void CLI::trackNewIncidents(){}
 void CLI::syncDevicesWithBackend(){}
->>>>>>> feature/cli-mergingBranch
