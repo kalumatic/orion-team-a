@@ -1,15 +1,14 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.BulkDeviceInsertResponseDTO;
-import com.example.demo.dto.BulkFailedDeviceDTO;
-import com.example.demo.dto.DeviceRequestDTO;
-import com.example.demo.dto.DeviceResponseDTO;
+import com.example.demo.dto.response.BulkDeviceInsertResponseDTO;
+import com.example.demo.dto.response.BulkFailedDeviceDTO;
+import com.example.demo.dto.request.DeviceRequestDTO;
+import com.example.demo.dto.response.DeviceResponseDTO;
 import com.example.demo.entity.Device;
 import com.example.demo.entity.Employee;
 import com.example.demo.repository.DeviceRepository;
 import com.example.demo.repository.EmployeeRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 

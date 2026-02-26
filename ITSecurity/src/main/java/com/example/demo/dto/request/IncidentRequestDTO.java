@@ -1,13 +1,14 @@
-package com.example.demo.dto;
+package com.example.demo.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
 @Data
-public class IncidentImportDTO {
+public class IncidentRequestDTO {
 
     @NotBlank(message = "Opis incidenta je obavezan")
     private String description;
@@ -21,9 +22,10 @@ public class IncidentImportDTO {
     @NotBlank(message = "Status je obavezan")
     private String status;
 
-    @NotNull(message = "Email je obavezan")
-    private String email;
+    @NotNull(message = "Reporter je obavezan")
+    private Long reporterId;
 
     @NotNull(message = "Device je obavezan")
-    private String serialNumber;
+    private Long deviceId;
+
 }

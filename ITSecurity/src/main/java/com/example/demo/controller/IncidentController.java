@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.IncidentImportDTO;
-import com.example.demo.dto.IncidentRequestDTO;
-import com.example.demo.dto.IncidentResponseDTO;
+import com.example.demo.dto.request.IncidentImportRequest;
+import com.example.demo.dto.request.IncidentRequestDTO;
+import com.example.demo.dto.response.IncidentResponseDTO;
 import com.example.demo.service.IncidentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class IncidentController {
     }
 
     @PostMapping("/importIncident")
-    public ResponseEntity<IncidentResponseDTO> importIncident(@Valid @RequestBody IncidentImportDTO dto) {
+    public ResponseEntity<IncidentResponseDTO> importIncident(@Valid @RequestBody IncidentImportRequest dto) {
         IncidentResponseDTO saved = incidentService.importIncident(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }

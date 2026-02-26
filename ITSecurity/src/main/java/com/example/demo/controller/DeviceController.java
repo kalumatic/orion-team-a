@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.BulkDeviceInsertResponseDTO;
-import com.example.demo.dto.DeviceRequestDTO;
-import com.example.demo.dto.DeviceResponseDTO;
+import com.example.demo.dto.response.BulkDeviceInsertResponseDTO;
+import com.example.demo.dto.request.DeviceRequestDTO;
+import com.example.demo.dto.response.DeviceResponseDTO;
 import com.example.demo.service.DeviceService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
