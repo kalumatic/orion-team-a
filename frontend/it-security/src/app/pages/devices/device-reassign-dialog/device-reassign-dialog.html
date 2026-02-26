@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>Reassign Device</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()" mat-dialog-content class="dialog-form">
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Search Employee</mat-label>
+    <input
+      type="text"
+      matInput
+      [matAutocomplete]="auto"
+      formControlName="employee"
+    />
+
+    <mat-autocomplete
+      #auto="matAutocomplete"
+      [displayWith]="displayEmployee"
+      panelClass="employee-autocomplete-panel">
+
+      <mat-option
+        *ngFor="let employee of filteredEmployees$ | async"
+        [value]="employee">
+        <div class="employee-option">
+          <strong>{{ employee.firstName }} {{ employee.lastName }}</strong>
+          <small>{{ employee.email }}</small>
+        </div>
+      </mat-option>
+
+    </mat-autocomplete>
+
+    <mat-error *ngIf="form.get('employee')?.hasError('required')">
+      Please select an employee
+    </mat-error>
+  </mat-form-field>
+
+</form>
+
+<div mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button class="sharp-btn" mat-flat-button color="primary" type="submit" (click)="save()" [disabled]="form.invalid">
+    Reassign
+  </button>
+</div>

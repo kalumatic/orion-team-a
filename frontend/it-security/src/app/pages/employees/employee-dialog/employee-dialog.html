@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Update Employee' : 'Create Employee' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()" mat-dialog-content class="dialog-form">
+
+  <mat-form-field appearance="fill">
+    <mat-label>First Name</mat-label>
+    <input matInput formControlName="firstName" />
+    <mat-error *ngIf="form.get('firstName')?.hasError('required')">
+      First Name is required
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Last Name</mat-label>
+    <input matInput formControlName="lastName" />
+    <mat-error *ngIf="form.get('lastName')?.hasError('required')">
+      Last Name is required
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" type="email" />
+    <mat-error *ngIf="form.get('email')?.hasError('required')">
+      Email is required
+    </mat-error>
+    <mat-error *ngIf="form.get('email')?.hasError('email')">
+      Please enter a valid email
+    </mat-error>
+  </mat-form-field>
+
+</form>
+
+<div mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button class="sharp-btn" mat-flat-button color="primary" type="submit" (click)="save()" [disabled]="form.invalid">
+    Save
+  </button>
+</div>
