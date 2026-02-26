@@ -1,15 +1,18 @@
 #pragma once
-
+#include "DeviceService.h"
+#include "EmployeeService.h"
 
 class CLI {
-private:
+	DeviceService& deviceService;
+	EmployeeService& employeeService;
 	void showMenu();
 	void createIncident();
 	void createDevice();
 	void createEmployee();
 	void storeEnteriesIntoDB();
 	void trackNewIncidents();
-	void syncDevicesWithBackend();
+	void syncEmployeesWithBackend();
 public:
+	CLI(EmployeeService& employeeService, DeviceService& deviceService);
 	void run();
 };

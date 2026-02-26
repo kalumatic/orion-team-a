@@ -5,7 +5,6 @@
 #include "json.hpp"
 
 
-
 using json = nlohmann::json;
 
 Employee::Employee(const std::string& name,const std::string& lastName, const std::string& email)
@@ -25,8 +24,22 @@ Employee::Employee(const std::string& name,const std::string& lastName, const st
     }
 
 
+std::string Employee::getName() const {
+    return m_name;
+}
+
+std::string Employee::getLastname() const {
+    return m_lastName;
+}
+
+
+std::string Employee::getEmail() const {
+    return m_email;
+}
+
+
 bool Employee::isValidName(const std::string& name) {
-    std::regex nameRegex("^[A-Za-z]+$");
+    std::regex nameRegex("^[A-Za-zČĆŠŽĐčćšžđ\\s-]+$");
 
     if (!std::regex_match(name, nameRegex))
         return false;
@@ -45,9 +58,9 @@ bool Employee::isValidEmail(const std::string& email) {
 std::string Employee::toJson(const std::string& filename) const
 {
     json j = {
-        {"name", m_name},
+        {"firstName", m_name},
         {"lastName", m_lastName},
-        {"emailAddress", m_email}
+        {"email", m_email}
     };
     std::ofstream file(filename);
     if (!file.is_open()) {
@@ -60,8 +73,20 @@ std::string Employee::toJson(const std::string& filename) const
 
 json Employee::toJson() const {
     return json{
-        {"name", m_name},
+        {"firstName", m_name},
         {"lastName", m_lastName},
-        {"emailAddress", m_email}
+        {"email", m_email}
     };
 }
+
+/*void Employee::setEmail(const string& email) {
+    m_email = email;
+}
+
+void Employee::setLastname(const string& lastname) {
+    m_lastName = lastname;
+}
+
+void Employee::setName(const string& name) {
+    m_name = name;
+}*/

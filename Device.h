@@ -1,26 +1,15 @@
 #pragma once
-#include "Employee.h"
-#include "json.hpp"
-
-using json = nlohmann::json; 
-
-using namespace std;
+#include "EmployeeService.h"
 
 class Device {
-private:
-	string type;
-	string model;
-	string serialNumber;
+	std::string type;
+	std::string model;
+	std::string serialNumber;
 	Employee& employee;
-
 public:
-	Device(const string& type, const string& model, const string& serialNumber, Employee& employee);
+	Device(const std::string& type, const std::string& model, const std::string& serialNumber, Employee& employee);
 
+	std::string getSerialNumber() const;
+	Employee getEmployee() const;
 	json toJson() const;
-	/*static bool isTypeValid(const string& type);
-	static bool isModelValid(const string& model);
-	static bool isSerialNumberValid(const string& serialNumber);
-	static bool isEmployeeValid(Employee* employee);*/
-
-	//~Device();
 };

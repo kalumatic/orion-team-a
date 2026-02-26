@@ -1,4 +1,4 @@
-#include "CLI.h"
+/* 
 
 int main() {
 	CLI terminal;
@@ -6,24 +6,38 @@ int main() {
 	terminal.run();
 
 	return 0;
-}
-/*
+}*/
 #include <iostream>
-#include "Employee.h"
-#include "Device.h"
+#include "CLI.h"
+
+using namespace std;
 
 int main() {
     try {
-        Employee emp("John", "Doe", "john@email.com");
+        EmployeeService employeeService;
+        DeviceService devService(employeeService);
+        CLI terminal(employeeService, devService);
 
-        Device dev("Laptop", "", "ABC123", emp);
+        terminal.run();
+        //Employee emp("Johne", "Doe", "johne@email.com");
 
-        auto j = dev.toJson();
+        //auto j = emp.toJson();
 
-        std::cout << j.dump(4) << std::endl; 
+       
 
+        //bool testCreate = eSerivce.createEmployee(emp);
+
+       // cout << testCreate << "\n";
+
+       // bool testFetch = eSerivce.fetchAllEmployees();
+
+       // cout << !testFetch << "\n";
+
+        //eSerivce.printToCSV("test");
+        
+       // std::cout << j.dump(4) << std::endl;   
     }
     catch (const std::exception& ex) {
         std::cerr << "Error: " << ex.what() << std::endl;
     }
-}*/
+}

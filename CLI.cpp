@@ -4,6 +4,9 @@
 
 using namespace std;
 
+CLI::CLI(EmployeeService& employeeService, DeviceService& deviceService): employeeService(employeeService), deviceService(deviceService) {}
+
+
 void CLI::run() {
 	int selectedOption;
 
@@ -26,7 +29,6 @@ void CLI::run() {
 			break;
 
 		case 3:
-			cout << "Selected option-> 3\n";
 			createEmployee();//not implemented
 			break;
 
@@ -41,8 +43,7 @@ void CLI::run() {
 			break;
 
 		case 6:
-			cout << "Selected option-> 6\n";
-			syncDevicesWithBackend();//not implemented
+			syncEmployeesWithBackend();//not implemented
 			break;
 
 		default:
@@ -61,14 +62,53 @@ void CLI::showMenu() {
 	cout << "3)Create Employee\n";
 	cout << "4)Store Enteries in DB\n";
 	cout << "5)Track New Incidents\n";
-	cout << "6)Sync Devices with Backend\n";
+	cout << "6)Sync Employees with Backend\n";
 	cout << "0)Exit\n";
 }
 
 void CLI::createIncident(){}
-
 void CLI::createDevice(){}
-void CLI::createEmployee(){}
+void CLI::createEmployee() {
+	string name;
+	string lastname;
+	string mail;
+
+	cout << "Enter Employee name\n";
+	getline(cin, name);//for reading leftover input from Menu
+	getline(cin, name);
+	while (!Employee::isValidName(name) || name == "0") {
+		cout << "Invalid Employee name - Enter valid name";
+		getline(cin, name);
+	}
+	if (name == "0") return;
+
+	cout << "Enter Employee lastname\n";
+	getline(cin, lastname);
+	while (!Employee::isValidName(lastname) || lastname == "0") {
+		cout << "Invalid Employee lastname - Enter valid lastname";
+		getline(cin, lastname);
+	}
+	if (lastname == "0") return;
+
+	cout << "Enter Employee mail\n";
+	getline(cin, mail);
+	while (!Employee::isValidEmail(mail) || mail == "0") {
+		cout << "Invalid Employee name - Enter valid name";
+		getline(cin, mail);
+	}
+	if (mail == "0") return;
+
+	Employee employee(name, lastname, mail);
+	employeeService.createEmployee(employee);
+}
 void CLI::storeEnteriesIntoDB(){}
 void CLI::trackNewIncidents(){}
-void CLI::syncDevicesWithBackend(){}
+void CLI::syncEmployeesWithBackend(){
+	string filename;
+	
+	cout << "Enter file name\n";
+	getline(cin, filename);//for reading leftover input from Menu
+	getline(cin, filename);
+
+	employeeService.printToCSV(filename);
+}
