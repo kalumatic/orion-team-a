@@ -151,6 +151,14 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
+    public List<DeviceResponseDTO> getAllDevicesList() {
+        List<Device> devices = deviceRepository.findAll();
+        return devices.stream()
+                .map(DeviceResponseDTO::new)
+                .toList();
+    }
+
+    @Override
     public DeviceResponseDTO deleteDevice(Long id) {
         Device device = deviceRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not found!"));

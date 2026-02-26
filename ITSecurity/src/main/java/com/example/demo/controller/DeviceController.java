@@ -53,6 +53,12 @@ public class DeviceController {
         return ResponseEntity.ok(devices);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<DeviceResponseDTO>> getAllList() {
+        List<DeviceResponseDTO> devices = service.getAllDevicesList();
+        return ResponseEntity.ok(devices);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<DeviceResponseDTO> delete(@PathVariable Long id) {
         DeviceResponseDTO response = service.deleteDevice(id);

@@ -14,5 +14,6 @@ public interface DeviceService {
     DeviceResponseDTO updateDevice(Long id, DeviceRequestDTO request);
     DeviceResponseDTO getDeviceById(Long id);
     Page<DeviceResponseDTO> getAllDevices(Pageable pageable);
+    List<DeviceResponseDTO> getAllDevicesList();
     DeviceResponseDTO deleteDevice(Long id);
 }
