@@ -9,7 +9,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { Employee, DeviceRequest } from '../../../types';
-import { EmployeeService } from '../../../services/employee.service'; // adjust path
+import { EmployeeService } from '../../../core/services/employee.service'; // adjust path
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 

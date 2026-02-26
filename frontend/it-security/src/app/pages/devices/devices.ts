@@ -1,24 +1,23 @@
 import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { forkJoin } from 'rxjs';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-
-import { DeviceRequest, DeviceResponse } from '../../types';
-import { DeviceService } from '../../services/device.service';
-import { EmployeeService } from '../../services/employee.service';
-import { DeviceDialog } from './device-dialog/device-dialog';
-import { DeviceReassignDialog } from './device-reassign-dialog/device-reassign-dialog';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { FormsModule } from '@angular/forms';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 import { HttpResponse } from '@angular/common/http';
-import { EmployeeResponse } from '../../types';
+import { ToastrService } from 'ngx-toastr';
+
+import { DeviceRequest, DeviceResponse, EmployeeResponse } from '../../types';
+import { DeviceService } from '../../core/services/device.service';
+import { EmployeeService } from '../../core/services/employee.service';
+import { DeviceDialog } from './device-dialog/device-dialog';
+import { DeviceReassignDialog } from './device-reassign-dialog/device-reassign-dialog';
 
 @Component({
   selector: 'app-devices',
@@ -45,12 +44,8 @@ import { EmployeeResponse } from '../../types';
 export class Devices implements AfterViewInit, OnInit {
 
   displayedColumns: string[] = [
-    'deviceType',
-    'model',
-    'serialNumber',
-    'assignedEmployeeName',
-    'assignmentDate',
-    'actions'
+    'deviceType', 'model', 'serialNumber',
+    'assignedEmployeeName', 'assignmentDate', 'actions'
   ];
 
   deviceFilterValues = {
@@ -60,7 +55,6 @@ export class Devices implements AfterViewInit, OnInit {
   };
 
   private employeeMap = new Map<number, string>();
-
   dataSource = new MatTableDataSource<DeviceResponse>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
@@ -69,28 +63,24 @@ export class Devices implements AfterViewInit, OnInit {
   constructor(
     private deviceService: DeviceService,
     private employeeService: EmployeeService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
-    // load employee map once for name resolution
     this.employeeService.getAllUnpaged().subscribe({
       next: (employees) => {
         employees.forEach(emp => {
           this.employeeMap.set(emp.id, `${emp.firstName} ${emp.lastName}`);
         });
       },
-      error: (err) => console.error('Failed to load employees', err)
+      error: () => {} // interceptor handles it
     });
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
-
-    this.paginator.page.subscribe(() => {
-      this.loadDevices();
-    });
-
+    this.paginator.page.subscribe(() => this.loadDevices());
     this.loadDevices();
   }
 
@@ -108,7 +98,7 @@ export class Devices implements AfterViewInit, OnInit {
         }));
         this.paginator.length = response.totalElements;
       },
-      error: (err) => console.error('Failed to load devices', err)
+      error: () => {}
     });
   }
 
@@ -116,16 +106,17 @@ export class Devices implements AfterViewInit, OnInit {
 
   openCreateDialog() {
     const dialogRef = this.dialog.open(DeviceDialog, {
-      width: '650px',
-      disableClose: true,
-      data: null
+      width: '650px', disableClose: true, data: null
     });
 
     dialogRef.afterClosed().subscribe((result: DeviceRequest) => {
       if (result) {
         this.deviceService.create(result).subscribe({
-          next: () => this.loadDevices(),
-          error: (err) => console.error('Failed to create device', err)
+          next: () => {
+            this.toastr.success('Device created successfully');
+            this.loadDevices();
+          },
+          error: () => {}
         });
       }
     });
@@ -133,16 +124,17 @@ export class Devices implements AfterViewInit, OnInit {
 
   openUpdateDialog(device: DeviceResponse) {
     const dialogRef = this.dialog.open(DeviceDialog, {
-      width: '650px',
-      disableClose: true,
-      data: { ...device }
+      width: '650px', disableClose: true, data: { ...device }
     });
 
     dialogRef.afterClosed().subscribe((result: DeviceRequest & { id: number }) => {
       if (result) {
         this.deviceService.update(result.id, result).subscribe({
-          next: () => this.loadDevices(),
-          error: (err) => console.error('Failed to update device', err)
+          next: () => {
+            this.toastr.success('Device updated successfully');
+            this.loadDevices();
+          },
+          error: () => {}
         });
       }
     });
@@ -150,9 +142,7 @@ export class Devices implements AfterViewInit, OnInit {
 
   openReassignDialog(device: DeviceResponse) {
     const dialogRef = this.dialog.open(DeviceReassignDialog, {
-      width: '500px',
-      disableClose: true,
-      data: { ...device }
+      width: '500px', disableClose: true, data: { ...device }
     });
 
     dialogRef.afterClosed().subscribe((result: EmployeeResponse) => {
@@ -166,8 +156,11 @@ export class Devices implements AfterViewInit, OnInit {
         };
 
         this.deviceService.update(device.id, reassignRequest).subscribe({
-          next: () => this.loadDevices(),
-          error: (err) => console.error('Failed to reassign device', err)
+          next: () => {
+            this.toastr.success('Device reassigned successfully');
+            this.loadDevices();
+          },
+          error: () => {}
         });
       }
     });
@@ -178,8 +171,11 @@ export class Devices implements AfterViewInit, OnInit {
 
     if (confirmed) {
       this.deviceService.delete(device.id).subscribe({
-        next: () => this.loadDevices(),
-        error: (err) => console.error('Failed to delete device', err)
+        next: () => {
+          this.toastr.success('Device deleted successfully');
+          this.loadDevices();
+        },
+        error: () => {}
       });
     }
   }
@@ -199,8 +195,10 @@ export class Devices implements AfterViewInit, OnInit {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
+
+        this.toastr.success('CSV downloaded successfully');
       },
-      error: (err) => console.error('Download failed', err)
+      error: () => {}
     });
   }
 
@@ -223,11 +221,7 @@ export class Devices implements AfterViewInit, OnInit {
   }
 
   clearDeviceFilters() {
-    this.deviceFilterValues = {
-      date: null,
-      serialNumber: '',
-      deviceType: ''
-    };
+    this.deviceFilterValues = { date: null, serialNumber: '', deviceType: '' };
     this.dataSource.filter = '';
   }
 }

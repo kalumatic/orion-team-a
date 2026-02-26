@@ -13,8 +13,8 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 import { IncidentRequest, DeviceResponse, EmployeeResponse } from '../../../types';
-import { EmployeeService } from '../../../services/employee.service';
-import { DeviceService } from '../../../services/device.service';
+import { EmployeeService } from '../../../core/services/employee.service';
+import { DeviceService } from '../../../core/services/device.service';
 
 @Component({
   selector: 'app-incident-dialog',

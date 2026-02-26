@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { DeviceRequest, DeviceResponse, Page } from '../types';
+import { DeviceRequest, DeviceResponse, Page } from '../../types';
 
 @Injectable({
   providedIn: 'root'
