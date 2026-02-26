@@ -12,6 +12,7 @@ import com.example.demo.exceptions.ValidationException;
 import com.example.demo.repository.DeviceRepository;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.repository.IncidentRepository;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,7 @@ import java.lang.module.ResolutionException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,9 +63,9 @@ public class IncidentServiceImpl implements IncidentService{
     @Override
     public IncidentResponseDTO importIncident(IncidentImportDTO dto) {
 
-        Employee reporter = employeeRepository.findByEmail(dto.getEmail());
+        Employee reporter = employeeRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Employee nije pronadjen"));
 
-        Device device  = deviceRepository.findBySerialNumber(dto.getSerialNumber());
+        Device device = deviceRepository.findBySerialNumber(dto.getSerialNumber()).orElseThrow(() -> new ResourceNotFoundException("Device nije pronadjen"));
 
         Incident incident = new Incident();
         incident.setDescription(dto.getDescription());
