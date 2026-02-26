@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="332cd47f-4727-4cdd-9b49-f41b45a0a21b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../../CLI/Employee.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../CLI/Employee.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../CLI/EmployeeService.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../CLI/EmployeeService.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../CLI/EmployeeService.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../CLI/EmployeeService.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../CLI/Incident.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../CLI/Incident.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../CLI/Incident.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../CLI/Incident.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../CLI_app/CLI.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/../../CLI_app/CLI.vcxproj" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="3AD1HuhuXtWFE3muANv5fV3qBhj" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.SecTrackApplication.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "feature/cli-create-incident",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/pemagenh/Desktop/orion-team-a/ITSecurity/src"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="332cd47f-4727-4cdd-9b49-f41b45a0a21b" name="Changes" comment="" />
+      <created>1772112243589</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1772112243589</updated>
+    </task>
+    <servers />
+  </component>
+</project>
