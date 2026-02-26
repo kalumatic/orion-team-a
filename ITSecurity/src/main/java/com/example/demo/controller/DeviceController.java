@@ -38,6 +38,8 @@ public class DeviceController {
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"devices.csv\"")
                 .body(csvContent);
+    }
+
     @PostMapping("/bulk/import")
     public ResponseEntity<BulkDeviceInsertResponseDTO> createBulk(@RequestBody List<DeviceRequestDTO> requests) {
         BulkDeviceInsertResponseDTO response = service.createDevicesBulk(requests);
