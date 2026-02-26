@@ -4,6 +4,7 @@ import { forkJoin } from 'rxjs';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { DeviceRequest, DeviceResponse } from '../../types';
@@ -12,41 +13,12 @@ import { EmployeeService } from '../../services/employee.service';
 import { DeviceDialog } from './device-dialog/device-dialog';
 import { DeviceReassignDialog } from './device-reassign-dialog/device-reassign-dialog';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FormsModule } from '@angular/forms';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { HttpResponse } from '@angular/common/http';
-
-const PLACEHOLDER_DEVICES: DeviceResponse[] = [
-  {
-    id: 1,
-    deviceType: 'Laptop',
-    model: 'Dell XPS 15',
-    serialNumber: 'SN12345',
-    assignedEmployee: 1,
-    assignedEmployeeName: 'Alice Johnson',
-    assignmentDate: '2025-01-10'
-  },
-  {
-    id: 2,
-    deviceType: 'Phone',
-    model: 'iPhone 14',
-    serialNumber: 'SN54321',
-    assignedEmployee: 2,
-    assignedEmployeeName: 'Mark Stevens',
-    assignmentDate: '2025-03-22'
-  },
-  {
-    id: 3,
-    deviceType: 'Tablet',
-    model: 'iPad Pro',
-    serialNumber: 'SN99988',
-    assignedEmployee: 3,
-    assignedEmployeeName: 'Sophia Lee',
-    assignmentDate: '2025-06-05'
-  }
-];
+import { EmployeeResponse } from '../../types';
 
 @Component({
   selector: 'app-devices',
@@ -56,6 +28,7 @@ const PLACEHOLDER_DEVICES: DeviceResponse[] = [
     MatTableModule,
     MatSortModule,
     MatButtonModule,
+    MatPaginatorModule,
     MatDialogModule,
     DeviceDialog,
     DeviceReassignDialog,
@@ -65,7 +38,6 @@ const PLACEHOLDER_DEVICES: DeviceResponse[] = [
     FormsModule,
     MatNativeDateModule,
     MatInputModule,
-    MatDialogModule
   ],
   templateUrl: './devices.html',
   styleUrls: ['./devices.css'],
@@ -92,6 +64,7 @@ export class Devices implements AfterViewInit, OnInit {
   dataSource = new MatTableDataSource<DeviceResponse>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private deviceService: DeviceService,
@@ -100,32 +73,42 @@ export class Devices implements AfterViewInit, OnInit {
   ) {}
 
   ngOnInit() {
-    this.setupFilter();
-    this.loadDevices();
-    this.dataSource.data = PLACEHOLDER_DEVICES;
+    // load employee map once for name resolution
+    this.employeeService.getAllUnpaged().subscribe({
+      next: (employees) => {
+        employees.forEach(emp => {
+          this.employeeMap.set(emp.id, `${emp.firstName} ${emp.lastName}`);
+        });
+      },
+      error: (err) => console.error('Failed to load employees', err)
+    });
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+
+    this.paginator.page.subscribe(() => {
+      this.loadDevices();
+    });
+
+    this.loadDevices();
   }
 
   /* ================= LOAD ================= */
 
   private loadDevices() {
-    forkJoin({
-      employees: this.employeeService.getAllUnpaged(),
-      devices: this.deviceService.getAll()
-    }).subscribe({
-      next: ({ employees, devices }) => {
-        employees.forEach(emp => {
-          this.employeeMap.set(emp.id, `${emp.firstName} ${emp.lastName}`);
-        });
-        this.dataSource.data = devices.map(device => ({
+    const page = this.paginator.pageIndex;
+    const size = this.paginator.pageSize || 10;
+
+    this.deviceService.getAllPaged(page, size).subscribe({
+      next: (response) => {
+        this.dataSource.data = response.content.map(device => ({
           ...device,
           assignedEmployeeName: this.employeeMap.get(device.assignedEmployee) ?? 'Unknown'
         }));
+        this.paginator.length = response.totalElements;
       },
-      error: (err) => console.error('Failed to load data', err)
+      error: (err) => console.error('Failed to load devices', err)
     });
   }
 
@@ -141,13 +124,7 @@ export class Devices implements AfterViewInit, OnInit {
     dialogRef.afterClosed().subscribe((result: DeviceRequest) => {
       if (result) {
         this.deviceService.create(result).subscribe({
-          next: (created) => {
-            const withName: DeviceResponse = {
-              ...created,
-              assignedEmployeeName: this.employeeMap.get(created.assignedEmployee) ?? 'Unknown'
-            };
-            this.dataSource.data = [...this.dataSource.data, withName];
-          },
+          next: () => this.loadDevices(),
           error: (err) => console.error('Failed to create device', err)
         });
       }
@@ -164,15 +141,7 @@ export class Devices implements AfterViewInit, OnInit {
     dialogRef.afterClosed().subscribe((result: DeviceRequest & { id: number }) => {
       if (result) {
         this.deviceService.update(result.id, result).subscribe({
-          next: (updated) => {
-            const withName: DeviceResponse = {
-              ...updated,
-              assignedEmployeeName: this.employeeMap.get(updated.assignedEmployee) ?? 'Unknown'
-            };
-            this.dataSource.data = this.dataSource.data.map(item =>
-              item.id === withName.id ? withName : item
-            );
-          },
+          next: () => this.loadDevices(),
           error: (err) => console.error('Failed to update device', err)
         });
       }
@@ -186,7 +155,7 @@ export class Devices implements AfterViewInit, OnInit {
       data: { ...device }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: EmployeeResponse) => {
       if (result) {
         const reassignRequest: DeviceRequest = {
           deviceType: device.deviceType,
@@ -197,15 +166,7 @@ export class Devices implements AfterViewInit, OnInit {
         };
 
         this.deviceService.update(device.id, reassignRequest).subscribe({
-          next: (updated) => {
-            const withName: DeviceResponse = {
-              ...updated,
-              assignedEmployeeName: `${result.firstName} ${result.lastName}`
-            };
-            this.dataSource.data = this.dataSource.data.map(item =>
-              item.id === withName.id ? withName : item
-            );
-          },
+          next: () => this.loadDevices(),
           error: (err) => console.error('Failed to reassign device', err)
         });
       }
@@ -217,11 +178,7 @@ export class Devices implements AfterViewInit, OnInit {
 
     if (confirmed) {
       this.deviceService.delete(device.id).subscribe({
-        next: () => {
-          this.dataSource.data = this.dataSource.data.filter(
-            item => item.id !== device.id
-          );
-        },
+        next: () => this.loadDevices(),
         error: (err) => console.error('Failed to delete device', err)
       });
     }
@@ -246,29 +203,7 @@ export class Devices implements AfterViewInit, OnInit {
       error: (err) => console.error('Download failed', err)
     });
   }
-  private setupFilter() {
-    this.dataSource.filterPredicate = (data: DeviceResponse, filter: string) => {
-      const search = JSON.parse(filter);
 
-      const matchesSerial =
-        !search.serialNumber ||
-        data.serialNumber.toLowerCase().includes(search.serialNumber);
-
-      const matchesType =
-        !search.deviceType ||
-        data.deviceType.toLowerCase().includes(search.deviceType);
-
-    const matchesDate = !search.date || (() => {
-      const d = new Date(data.assignmentDate);
-      const yyyy = d.getUTCFullYear();
-      const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
-      const dd = String(d.getUTCDate()).padStart(2, '0');
-      return `${yyyy}-${mm}-${dd}` === search.date;
-    })();
-
-      return matchesSerial && matchesType && matchesDate;
-    };
-  }
   applyDeviceFilters() {
     let formattedDate: string | null = null;
 
@@ -293,7 +228,6 @@ export class Devices implements AfterViewInit, OnInit {
       serialNumber: '',
       deviceType: ''
     };
-
     this.dataSource.filter = '';
   }
 }

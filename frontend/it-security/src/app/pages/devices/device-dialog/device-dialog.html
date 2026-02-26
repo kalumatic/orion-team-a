@@ -56,6 +56,16 @@
     </mat-error>
   </mat-form-field>
 
+  <mat-form-field appearance="fill">
+    <mat-label>Assignment Date</mat-label>
+    <input matInput [matDatepicker]="assignmentPicker" formControlName="assignmentDate" />
+    <mat-datepicker-toggle matSuffix [for]="assignmentPicker"></mat-datepicker-toggle>
+    <mat-datepicker #assignmentPicker></mat-datepicker>
+    <mat-error *ngIf="form.get('assignmentDate')?.hasError('required')">
+      Assignment Date is required
+    </mat-error>
+  </mat-form-field>
+
 </form>
 
 <div mat-dialog-actions align="end">

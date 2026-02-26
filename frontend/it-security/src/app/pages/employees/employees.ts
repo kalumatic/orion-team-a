@@ -62,17 +62,18 @@ export class Employees implements AfterViewInit, OnInit {
   ) {}
 
   ngOnInit() {
-    this.dataSource.data = PLACEHOLDER_EMPLOYEES; // tmp - remove and call loadEmployees() when backend is ready
+    //this.dataSource.data = PLACEHOLDER_EMPLOYEES; // tmp - remove and call loadEmployees() when backend is ready
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
+    //this.dataSource.paginator = this.paginator;
 
-    // trigger backend call on every page or page size change
     this.paginator.page.subscribe(() => {
       this.loadEmployees();
     });
+
+    this.loadEmployees(); // add this
   }
 
   /* ================= LOAD ================= */

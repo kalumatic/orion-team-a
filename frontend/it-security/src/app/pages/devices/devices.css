@@ -1,17 +1,9 @@
-/* =========================================
-   PAGE CONTAINER
-========================================= */
-
 .device-container {
   padding: 40px;
   background: #f8fafc;
   min-height: 100vh;
   box-sizing: border-box;
 }
-
-/* =========================================
-   HEADER
-========================================= */
 
 .header-row {
   display: flex;
@@ -33,20 +25,65 @@
   color: #6b7280;
 }
 
-/* =========================================
-   BUTTONS
-========================================= */
-
-.primary-btn {
+.primary-btn,
+.apply-btn,
+.clear-btn {
   height: 40px;
   padding: 0 18px;
   border-radius: 0;
   box-shadow: none;
 }
 
-/* =========================================
-   TABLE
-========================================= */
+.clear-btn.mat-mdc-outlined-button {
+  border: none !important;
+}
+
+/* ================= FILTER BAR ================= */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #ffffff;
+  padding: 16px 24px;
+  margin-bottom: 30px;
+  box-sizing: border-box;
+}
+
+.filter-field {
+  width: 220px;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-container-height: 40px;
+}
+
+.mat-mdc-text-field-wrapper {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.filter-bar .mat-mdc-form-field {
+  margin-top: 0;
+}
+
+.filter-bar .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+  margin-top: 0 !important;
+}
+
+.filter-bar .mdc-notched-outline {
+  top: 0 !important;
+}
+
+.filter-bar .mat-mdc-form-field-flex {
+  margin-top: 0 !important;
+}
+
+/* ================= TABLE ================= */
 
 .table-wrapper {
   background: white;
@@ -70,9 +107,15 @@ table {
   color: #1f2937;
 }
 
-/* =========================================
-   ACTION BUTTONS
-========================================= */
+/* ================= PAGINATOR ================= */
+
+.paginator-wrapper {
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* ================= ACTION BUTTONS ================= */
 
 .action-buttons {
   display: flex;
@@ -80,105 +123,13 @@ table {
   justify-content: flex-end;
 }
 
-.reassign-btn,
 .update-btn,
+.reassign-btn,
 .delete-btn {
   height: 34px;
   padding: 0 14px;
   border-radius: 0;
   font-size: 13px;
-}
-
-/* =========================================
-   BUTTONS (40px STANDARD, SHARP)
-========================================= */
-
-.primary-btn,
-.apply-btn,
-.clear-btn {
-  height: 40px;
-  padding: 0 18px;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-/* Remove outline from stroked clear button */
-.clear-btn.mat-mdc-outlined-button {
-  border: none !important;
-}
-
-/* =========================================
-   FILTER BAR (SINGLE HORIZONTAL ROW)
-========================================= */
-
-.filter-bar {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background: #ffffff;
-  padding: 16px 24px;
-  margin-bottom: 30px;
-  box-sizing: border-box;
-}
-
-/* Make all fields fixed width */
-.filter-field {
-  width: 220px;
-}
-
-/* Remove Angular bottom spacing */
-.mat-mdc-form-field-subscript-wrapper {
-  display: none;
-}
-
-/* Force EXACT 40px height */
-.mat-mdc-form-field {
-  --mdc-outlined-text-field-container-height: 40px;
-}
-
-/* Remove extra vertical padding inside form field */
-.mat-mdc-text-field-wrapper {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-/* =========================================
-   FILTER BAR ALIGNMENT FIX
-========================================= */
-
-.filter-bar .mat-mdc-form-field {
-  margin-top: 0;
-}
-
-.filter-bar .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
-  margin-top: 0 !important;
-}
-
-.filter-bar .mdc-notched-outline {
-  top: 0 !important;
-}
-
-.filter-bar .mat-mdc-form-field-flex {
-  margin-top: 0 !important;
-}
-
-/* =========================================
-   FILTER BUTTONS
-========================================= */
-
-.apply-btn,
-.clear-btn {
-  height: 40px;
-  padding: 0 18px;
-  border-radius: 0;
-  box-shadow: none;
-  align-self: auto;
-  margin-top: 0;
-}
-
-/* Remove outline from Clear button */
-.clear-btn.mat-mdc-outlined-button {
-  border: none !important;
 }
 
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {

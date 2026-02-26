@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { DeviceRequest, DeviceResponse } from '../types';
+import { DeviceRequest, DeviceResponse, Page } from '../types';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,11 @@ export class DeviceService {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<DeviceResponse[]> {
-    return this.http.get<DeviceResponse[]>(this.apiUrl);
+    return this.http.get<DeviceResponse[]>(`${this.apiUrl}` + `/all`); // add /all for non-paginated endpoint
+  }
+
+  getAllPaged(page: number = 0, size: number = 10): Observable<Page<DeviceResponse>> {
+    return this.http.get<Page<DeviceResponse>>(`${this.apiUrl}?page=${page}&size=${size}`);
   }
 
   getById(id: number): Observable<DeviceResponse> {

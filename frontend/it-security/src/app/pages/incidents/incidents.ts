@@ -111,7 +111,8 @@ export class Incidents implements AfterViewInit, OnInit {
 
   ngOnInit() {
     this.initializeFilter();
-    this.dataSource.data = PLACEHOLDER_INCIDENTS; // tmp - replace with loadIncidents()
+    //this.dataSource.data = PLACEHOLDER_INCIDENTS; // tmp - replace with loadIncidents()
+    this.loadIncidents();
     this.applyFilters();
   }
 
@@ -124,6 +125,7 @@ export class Incidents implements AfterViewInit, OnInit {
   private loadIncidents() {
     this.incidentService.getAll().subscribe({
       next: (incidents) => {
+        console.log('Loaded incidents:', incidents);
         this.dataSource.data = incidents;
         this.applyFilters();
       },

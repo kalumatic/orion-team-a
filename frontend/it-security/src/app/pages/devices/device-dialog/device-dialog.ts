@@ -7,16 +7,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Observable, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { Employee, DeviceRequest } from '../../../types';
-
-const PLACEHOLDER_EMPLOYEES: Employee[] = [
-  { id: 1, firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@company.com' },
-  { id: 2, firstName: 'Mark', lastName: 'Stevens', email: 'mark.stevens@company.com' },
-  { id: 3, firstName: 'Sophia', lastName: 'Lee', email: 'sophia.lee@company.com' },
-  { id: 4, firstName: 'James', lastName: 'Carter', email: 'james.carter@company.com' },
-  { id: 5, firstName: 'Emma', lastName: 'Wilson', email: 'emma.wilson@company.com' },
-];
+import { EmployeeService } from '../../../services/employee.service'; // adjust path
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-device-dialog',
@@ -29,6 +24,9 @@ const PLACEHOLDER_EMPLOYEES: Employee[] = [
     MatInputModule,
     MatButtonModule,
     MatAutocompleteModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule
   ],
   templateUrl: './device-dialog.html',
   styleUrl: './device-dialog.css'
@@ -37,11 +35,13 @@ export class DeviceDialog implements OnInit {
 
   form: FormGroup;
   isEditMode = false;
+  allEmployees: Employee[] = [];
   filteredEmployees$!: Observable<Employee[]>;
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<DeviceDialog>,
+    private employeeService: EmployeeService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.form = this.fb.group({
@@ -51,40 +51,47 @@ export class DeviceDialog implements OnInit {
       model: ['', Validators.required],
       serialNumber: ['', Validators.required],
       employee: [null, Validators.required],
+      assignmentDate: [null, Validators.required],  // add this
     });
   }
 
   ngOnInit(): void {
     if (this.data) {
       this.isEditMode = true;
-
       this.form.patchValue({
         id: this.data.id ?? null,
         assignedEmployeeId: this.data.assignedEmployee ?? null,
         deviceType: this.data.deviceType ?? '',
         model: this.data.model ?? '',
         serialNumber: this.data.serialNumber ?? '',
-        employee: this.data.assignedEmployeeName ?? null, // pre-fill name as placeholder
+        employee: this.data.assignedEmployeeName ?? null,
+        assignmentDate: this.data.assignmentDate ? new Date(this.data.assignmentDate) : null,  // add this
       });
     }
 
+    // Load all employees from the API
+    this.employeeService.getAllUnpaged().subscribe(employees => {
+      this.allEmployees = employees;
+    });
+
     this.filteredEmployees$ = this.form.get('employee')!.valueChanges.pipe(
+      startWith(''),
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(value => this.searchEmployees(value))
+      map(value => this.filterEmployees(value))
     );
   }
 
-  private searchEmployees(value: string | Employee): Observable<Employee[]> {
-    if (typeof value !== 'string') return of([]);
-    const searchValue = value.toLowerCase().trim();
-    if (searchValue.length < 2) return of([]);
+  private filterEmployees(value: string | Employee): Employee[] {
+    if (typeof value !== 'string') return [];
+    const search = value.toLowerCase().trim();
+    if (search.length < 2) return [];
 
-    return of(PLACEHOLDER_EMPLOYEES.filter(emp =>
-      emp.firstName.toLowerCase().includes(searchValue) ||
-      emp.lastName.toLowerCase().includes(searchValue) ||
-      emp.email.toLowerCase().includes(searchValue)
-    ));
+    return this.allEmployees.filter(emp =>
+      emp.firstName.toLowerCase().includes(search) ||
+      emp.lastName.toLowerCase().includes(search) ||
+      emp.email.toLowerCase().includes(search)
+    );
   }
 
   displayEmployee(employee: Employee | string): string {
@@ -100,7 +107,10 @@ export class DeviceDialog implements OnInit {
 
     const assignedEmployeeId = typeof employeeValue === 'object' && employeeValue !== null
       ? employeeValue.id
-      : formValue.assignedEmployeeId; // fall back to original if not changed
+      : formValue.assignedEmployeeId;
+
+    const d = new Date(formValue.assignmentDate);
+    const assignmentDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
     const request: DeviceRequest & { id: number } = {
       id: formValue.id,
@@ -108,7 +118,7 @@ export class DeviceDialog implements OnInit {
       model: formValue.model,
       serialNumber: formValue.serialNumber,
       assignedEmployeeId: assignedEmployeeId,
-      assignmentDate: new Date().toISOString().split('T')[0]
+      assignmentDate: assignmentDate
     };
 
     this.dialogRef.close(request);
