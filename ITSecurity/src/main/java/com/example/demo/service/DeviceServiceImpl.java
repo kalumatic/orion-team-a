@@ -10,6 +10,7 @@ import com.example.demo.repository.DeviceRepository;
 import com.example.demo.repository.EmployeeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,6 +80,8 @@ public class DeviceServiceImpl implements DeviceService {
         }
 
         return csv.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
     public BulkDeviceInsertResponseDTO createDevicesBulk(List<DeviceRequestDTO> requests) {
         BulkDeviceInsertResponseDTO response = new BulkDeviceInsertResponseDTO(new ArrayList<>(), new ArrayList<>());
         if (requests == null || requests.isEmpty()) {
@@ -205,6 +208,8 @@ public class DeviceServiceImpl implements DeviceService {
         }
 
         return "\"" + strValue.replace("\"", "\"\"") + "\"";
+    }
+
     private List<String> validateBulkRequest(DeviceRequestDTO dto, Set<String> batchSerialNumbers) {
         List<String> errors = new ArrayList<>();
         if (dto == null) {
