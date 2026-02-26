@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Daily Security Report</title>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 30px;
+
+            @bottom-center {
+                content: "Page " counter(page) " of " counter(pages);
+                font-size: 10px;
+                color: #777;
+            }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+        }
+
+        h1 {
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .report-info {
+            text-align: right;
+        }
+
+        .summary-box {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f4f6f8;
+            border: 1px solid #ddd;
+        }
+
+        table.incident-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.incident-table th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-size: 11px;
+        }
+
+        table.incident-table td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            font-size: 11px;
+        }
+
+        table.incident-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Severity colors */
+        .severity-low {
+            color: green;
+            font-weight: bold;
+        }
+
+        .severity-medium {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .severity-high {
+            color: red;
+            font-weight: bold;
+        }
+
+        .severity-critical {
+            color: darkred;
+            font-weight: bold;
+        }
+
+        .footer-note {
+            margin-top: 30px;
+            font-size: 10px;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<table class="header-table">
+    <tr>
+        <td>
+            <img th:src="'data:image/png;base64,' + ${logoBase64}" width="130"/>
+        </td>
+        <td class="report-info">
+            <h1>Daily Security Report</h1>
+            <p><strong>Date:</strong> <span th:text="${reportDate}"></span></p>
+            <p><strong>Generated at:</strong> <span th:text="${generatedAt}"></span></p>
+        </td>
+    </tr>
+</table>
+
+<!-- SUMMARY -->
+<div class="summary-box">
+    <strong>Total Incidents Today:</strong>
+    <span th:text="${totalCount}"></span>
+</div>
+
+<!-- INCIDENT TABLE -->
+<table class="incident-table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Description</th>
+        <th>Device</th>
+        <th>Reporter</th>
+        <th>Severity</th>
+        <th>Status</th>
+        <th>Date</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="incident : ${incidents}">
+        <td th:text="${incident.id}"></td>
+        <td th:text="${incident.description}"></td>
+        <td th:text="${incident.device.serialNumber}"></td>
+        <td th:text="${incident.reporter.firstName + ' ' + incident.reporter.lastName}"></td>
+
+        <td th:text="${incident.severity}"
+            th:classappend="
+                ${incident.severity == 'Low'} ? 'severity-low' :
+                (${incident.severity == 'Medium'} ? 'severity-medium' :
+                (${incident.severity == 'High'} ? 'severity-high' :
+                (${incident.severity == 'Critical'} ? 'severity-critical' : '')))
+            ">
+        </td>
+
+        <td th:text="${incident.status}"></td>
+        <td th:text="${incident.incidentDate}"></td>
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(incidents)}">
+        <td colspan="7" style="text-align:center; padding:15px;">
+            No incidents recorded for this date.
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- FOOTER NOTE -->
+<div class="footer-note">
+    This report is system-generated and confidential.
+</div>
+
+</body>
+</html>
