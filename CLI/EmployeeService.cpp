@@ -42,7 +42,6 @@ bool EmployeeService::fetchAllEmployees() {
 
     auto jsonData = nlohmann::json::parse(response.text);
 
-    cout << jsonData.dump();
 
     for (const auto& item : jsonData) {
         Employee emp(
@@ -117,9 +116,15 @@ void EmployeeService::printToCSV(const string& filename) const {
 
     file << "Filename,date and time\n";
     file << filename << ",";
-    file << std::put_time(&tm, "%d-%m-%Y %H:%M:%S");
+    file << std::put_time(&tm, "%d-%m-%Y %H:%M:%S\n");
+    
+    file << "Name,Lastname,Mail\n";
+    for (int i = 0; i < allEmployees.size(); i++) {
+        file << allEmployees[i].getName() << "," << allEmployees[i].getLastname() << "," << allEmployees[i].getEmail() << "\n";
+    }
 
 }
+
 bool EmployeeService::emailExists(const std::string& email)
 {
 

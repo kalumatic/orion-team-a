@@ -22,7 +22,7 @@ void CLI::run() {
 		case 0:
 			return;
 		case 1:
-			createIncident();//not implemented
+			createIncident();
 			break;
 
 		case 2:
@@ -35,16 +35,15 @@ void CLI::run() {
 			break;
 
 		case 4:
-			storeEnteriesIntoDB();//not implemented
+			storeEnteriesIntoDB();
 			break;
 
 		case 5:
-		
 			trackNewIncidents();//not implemented
 			break;
 
 		case 6:
-			syncEmployeesWithBackend();//not implemented
+			syncEmployeesWithBackend();
 			break;
 
 		default:
@@ -211,9 +210,13 @@ void CLI::storeEnteriesIntoDB() {
 
 	incidentService.sendIncidentToBackend();
 }
-void CLI::trackNewIncidents() {}
+void CLI::trackNewIncidents() {
+	incidentService.trackIncidents();
+}
 void CLI::syncEmployeesWithBackend() {
 	string filename;
+
+	employeeService.fetchAllEmployees();
 
 	cout << "Enter file name\n";
 	getline(cin, filename);//for reading leftover input from Menu

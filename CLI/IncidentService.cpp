@@ -30,18 +30,20 @@ bool IncidentService::createIncident(
         }
 
      
-        if (!m_employeeService.fetchAllEmployees())
+        if (m_employeeService.fetchAndSearchAllEmployes(reporterEmail) <= 0){
+            std::cerr << "Employee email not found.\n";
             return false;
+        }
 
         if (!m_deviceService.fetchAndSearchAllDevices(deviceSerial))
             return false;
 
 
-        if (!m_employeeService.emailExists(reporterEmail))
-        {
-            std::cerr << "Employee email not found.\n";
-            return false;
-        }
+        //if (!m_employeeService.emailExists(reporterEmail))
+        //{
+        //    std::cerr << "Employee email not found.\n";
+        //    return false;
+        //}
 
 
         Incident::Severity severity = parseSeverity(severityStr);
@@ -64,7 +66,7 @@ bool IncidentService::createIncident(
         return false;
     }
 }
-//TODO
+
 bool IncidentService::sendIncidentToBackend()
 {
     for (auto incident : m_incidents) {
@@ -122,4 +124,37 @@ Incident::Status IncidentService::parseStatus(const std::string& str)
         return Incident::Status::Closed;
 
     throw std::invalid_argument("Invalid status value: " + str);
+}
+
+void IncidentService::trackIncidents() {
+    auto response = cpr::Get(
+        cpr::Url{ "http://localhost:8080/api/incidents" },
+        cpr::Timeout{ 5000 } 
+    );
+
+    if (response.status_code == 200) {
+
+        json incidents = json::parse(response.text);
+
+        std::cout << "---- INCIDENTS ----\n";
+
+        for (const auto& incident : incidents) {
+
+            std::cout << "ID: " << incident["id"] << "\n"
+                << "Date: " << incident["incidentDate"] << "\n"
+                << "Reporter: " << incident["reporterName"]
+                << " (ID: " << incident["reporterId"] << ")\n"
+                << "Device: " << incident["deviceInfo"]
+                << " (ID: " << incident["deviceId"] << ")\n"
+                << "Severity: " << incident["severity"] << "\n"
+                << "Status: " << incident["status"] << "\n"
+                << "Description: " << incident["description"] << "\n"
+                << "----------------------------------------\n";
+        }
+
+    }
+    else {
+        std::cout << "Request failed. Status code: "
+            << response.status_code << std::endl;
+    }
 }
