@@ -16,6 +16,7 @@ import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker
 import { FormsModule } from '@angular/forms';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
+import { HttpResponse } from '@angular/common/http';
 
 const PLACEHOLDER_DEVICES: DeviceResponse[] = [
   {
@@ -228,19 +229,21 @@ export class Devices implements AfterViewInit, OnInit {
 
   downloadCsv() {
     this.deviceService.downloadCsv().subscribe({
-      next: (blob: Blob) => {
-        const url = window.URL.createObjectURL(blob);
+      next: (response: HttpResponse<Blob>) => {
+        const blob = response.body!;
+        const disposition = response.headers.get('Content-Disposition') ?? '';
+        const filename = disposition.match(/filename="(.+?)"/)?.[1] ?? 'devices.csv';
 
+        const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'report.csv'; // You can change dynamically
+        a.download = filename;
+        document.body.appendChild(a);
         a.click();
-
+        document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
       },
-      error: (err) => {
-        console.error('Download failed', err);
-      }
+      error: (err) => console.error('Download failed', err)
     });
   }
   private setupFilter() {

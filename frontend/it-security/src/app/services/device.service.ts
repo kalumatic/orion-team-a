@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DeviceRequest, DeviceResponse } from '../types';
 
@@ -32,11 +32,11 @@ export class DeviceService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  downloadCsv(): Observable<Blob> {
-    return this.http.get('/api/export-csv', {
-      responseType: 'blob'
+  downloadCsv(): Observable<HttpResponse<Blob>> {
+    return this.http.get(`${this.apiUrl}/bulk/export`, {
+      responseType: 'blob',
+      observe: 'response'
     });
   }
-
 
 }

@@ -10,6 +10,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EmployeeRequest, EmployeeResponse } from '../../types';
 import { EmployeeService } from '../../services/employee.service';
 import { EmployeeDialog } from './employee-dialog/employee-dialog';
+import { HttpResponse } from '@angular/common/http';
 
 const PLACEHOLDER_EMPLOYEES: EmployeeResponse[] = [
   { id: 1, firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@company.com' },
@@ -148,19 +149,21 @@ export class Employees implements AfterViewInit, OnInit {
 
   downloadCsv() {
     this.employeeService.downloadCsv().subscribe({
-      next: (blob: Blob) => {
-        const url = window.URL.createObjectURL(blob);
+      next: (response: HttpResponse<Blob>) => {
+        const blob = response.body!;
+        const disposition = response.headers.get('Content-Disposition') ?? '';
+        const filename = disposition.match(/filename="(.+?)"/)?.[1] ?? 'employees.csv';
 
+        const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'report.csv'; // You can change dynamically
+        a.download = filename;
+        document.body.appendChild(a);
         a.click();
-
+        document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
       },
-      error: (err) => {
-        console.error('Download failed', err);
-      }
+      error: (err) => console.error('Download failed', err)
     });
   }
 }
