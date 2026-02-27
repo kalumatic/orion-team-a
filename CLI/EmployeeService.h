@@ -3,14 +3,15 @@
 #include <cpr/cpr.h>
 
 
-using namespace std;
-
-class EmployeeService {	
-	vector<Employee> allEmployees;
+class EmployeeService {
+	std::vector<Employee> allEmployees;
 
 public:
 	EmployeeService() {};
 	bool fetchAllEmployees();
+	long fetchAndSearchAllEmployes(const std::string& email);
 	bool createEmployee(Employee& employee);
-	void printToCSV(const string& filename) const;
+	void printToCSV(const std::string& filename) const;
+	Employee getEmployee(long id);
+	bool emailExists(const std::string& email);
 };

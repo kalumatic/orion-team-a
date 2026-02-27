@@ -7,21 +7,22 @@
 
 using json = nlohmann::json;
 
-Employee::Employee(const std::string& name,const std::string& lastName, const std::string& email)
-    {
-        if (!isValidName(name))
-            throw std::invalid_argument("Invalid first name");
+Employee::Employee(const std::string& name, const std::string& lastName, const std::string& email)
+{
+    if (!isValidName(name))
+        throw std::invalid_argument("Invalid first name");
 
-        if (!isValidName(lastName))
-            throw std::invalid_argument("Invalid last name");
+    if (!isValidName(lastName))
+        throw std::invalid_argument("Invalid last name");
 
-        if (!isValidEmail(email))
-            throw std::invalid_argument("Invalid email address");
+    if (!isValidEmail(email))
+        throw std::invalid_argument("Invalid email address");
 
-        m_name = name;
-        m_lastName = lastName;
-        m_email = email;
-    }
+
+    m_name = name;
+    m_lastName = lastName;
+    m_email = email;
+}
 
 
 std::string Employee::getName() const {
@@ -78,15 +79,3 @@ json Employee::toJson() const {
         {"email", m_email}
     };
 }
-
-/*void Employee::setEmail(const string& email) {
-    m_email = email;
-}
-
-void Employee::setLastname(const string& lastname) {
-    m_lastName = lastname;
-}
-
-void Employee::setName(const string& name) {
-    m_name = name;
-}*/

@@ -4,8 +4,30 @@
 #include <iostream>
 
 
+using namespace std;
 
-bool EmployeeService::fetchAllEmployees(){
+Employee EmployeeService::getEmployee(long id) {
+    std::string url = "http://localhost:8080/api/employees/" + std::to_string(id);
+
+    auto response = cpr::Get(cpr::Url{ url });
+
+    if (response.status_code != 200) {
+        std::cerr << "Error: " << response.status_code << "\n";
+        return Employee();
+    }
+
+    auto jsonData = nlohmann::json::parse(response.text);
+
+    Employee emp(
+        jsonData.value("firstName", ""),
+        jsonData.value("lastName", ""),
+        jsonData.value("email", "")
+    );
+
+    return emp;
+}
+
+bool EmployeeService::fetchAllEmployees() {
     allEmployees.clear();
 
     auto response = cpr::Get(
@@ -17,9 +39,11 @@ bool EmployeeService::fetchAllEmployees(){
         return false;
     }
 
+
     auto jsonData = nlohmann::json::parse(response.text);
 
-   for (const auto& item : jsonData) {
+
+    for (const auto& item : jsonData) {
         Employee emp(
             item.at("firstName").get<std::string>(),
             item.at("lastName").get<std::string>(),
@@ -32,8 +56,36 @@ bool EmployeeService::fetchAllEmployees(){
     return true;
 }
 
+long EmployeeService::fetchAndSearchAllEmployes(const string& email) {
+    allEmployees.clear();
 
-bool EmployeeService::createEmployee(Employee& employee){
+    auto response = cpr::Get(
+        cpr::Url{ "http://localhost:8080/api/employees/all" }
+    );
+
+    if (response.status_code != 200) {
+        std::cerr << "Error: " << response.status_code << "\n";
+        return -1;
+    }
+
+    auto jsonData = nlohmann::json::parse(response.text);
+
+    for (const auto& item : jsonData) {
+        Employee emp(
+            item.at("firstName").get<std::string>(),
+            item.at("lastName").get<std::string>(),
+            item.at("email").get<std::string>()
+        );
+        if (email == emp.getEmail()) {
+            return item.at("id");
+        }
+        allEmployees.push_back(emp);
+    }
+
+    return 0;
+}
+
+bool EmployeeService::createEmployee(Employee& employee) {
     nlohmann::json jsonData = employee.toJson();
 
     auto response = cpr::Post(
@@ -52,9 +104,9 @@ bool EmployeeService::createEmployee(Employee& employee){
 }
 
 
-//OCEKUJE SE DATE I TIME POZIVA KOMANDE
+
 void EmployeeService::printToCSV(const string& filename) const {
-	ofstream file(filename);
+    ofstream file(filename);
 
     auto now = std::chrono::system_clock::now();
     std::time_t now_time = std::chrono::system_clock::to_time_t(now);
@@ -64,6 +116,23 @@ void EmployeeService::printToCSV(const string& filename) const {
 
     file << "Filename,date and time\n";
     file << filename << ",";
-    file << std::put_time(&tm, "%d-%m-%Y %H:%M:%S");
+    file << std::put_time(&tm, "%d-%m-%Y %H:%M:%S\n");
     
+    file << "Name,Lastname,Mail\n";
+    for (int i = 0; i < allEmployees.size(); i++) {
+        file << allEmployees[i].getName() << "," << allEmployees[i].getLastname() << "," << allEmployees[i].getEmail() << "\n";
+    }
+
+}
+
+bool EmployeeService::emailExists(const std::string& email)
+{
+
+    for (const auto& emp : allEmployees)
+    {
+        if (emp.getEmail() == email)
+            return true;
+    }
+
+    return false;
 }
