@@ -75,6 +75,7 @@ Trenutni meni:
 
 ## Autori
 
+- Sonja Vukojicic
 - Jovan Hrnjak
 - Bozidar Radosavljevic
 - Damjan Ilic
