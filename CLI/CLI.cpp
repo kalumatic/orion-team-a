@@ -160,7 +160,6 @@ void CLI::createDevice() {
 	}
 
 	long id = employeeService.fetchAndSearchAllEmployes(mail);
-	cout << id;
 	if (id <= 0) {
 		cout << "Employee doesn't exist - Go to menu and create employee\n";
 		return;
@@ -211,7 +210,12 @@ void CLI::storeEnteriesIntoDB() {
 	incidentService.sendIncidentToBackend();
 }
 void CLI::trackNewIncidents() {
-	incidentService.trackIncidents();
+	string filename;
+	cout << "Enter file name\n";
+	getline(cin, filename);//for reading leftover input from Menu
+	getline(cin, filename);
+
+	incidentService.trackIncidents(filename);
 }
 void CLI::syncEmployeesWithBackend() {
 	string filename;

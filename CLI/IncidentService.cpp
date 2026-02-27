@@ -5,6 +5,8 @@
 #include "json.hpp"
 #include <iostream>
 #include <stdexcept>
+#include <fstream>
+using namespace std;
 
 using json = nlohmann::json;
 
@@ -126,19 +128,41 @@ Incident::Status IncidentService::parseStatus(const std::string& str)
     throw std::invalid_argument("Invalid status value: " + str);
 }
 
-void IncidentService::trackIncidents() {
+void IncidentService::trackIncidents(const string& filename) {
     auto response = cpr::Get(
         cpr::Url{ "http://localhost:8080/api/incidents" },
         cpr::Timeout{ 5000 } 
     );
 
     if (response.status_code == 200) {
+        ofstream file(filename);
+
+        auto now = std::chrono::system_clock::now();
+        std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+        std::tm tm;
+        localtime_s(&tm, &now_time);
+
+
+        file << "Filename,date and time\n";
+        file << filename << ",";
+        file << std::put_time(&tm, "%d-%m-%Y %H:%M:%S\n");
 
         json incidents = json::parse(response.text);
 
         std::cout << "---- INCIDENTS ----\n";
+        file << "ID" << "," << "Date" << "," << "Reporter Employee" << "," << "Employe ID" << "," << "Device" << "," << "Device ID" << "," << "Severity" << "," << "Status" << "," << "Descritption\n";
 
         for (const auto& incident : incidents) {
+
+            file <<incident["id"]
+                << ","<< incident["incidentDate"] << ","
+                << incident["reporterName"]
+                << "," << incident["reporterId"] << ","
+                << incident["deviceInfo"]
+                << "," << incident["deviceId"] << ","
+                << incident["severity"] << ","
+                << incident["status"] << ","
+                << incident["description"] << "\n";
 
             std::cout << "ID: " << incident["id"] << "\n"
                 << "Date: " << incident["incidentDate"] << "\n"

@@ -19,7 +19,7 @@ public:
         const std::string& status);
 
     bool sendIncidentToBackend();
-    void trackIncidents();
+    void trackIncidents(const std::string& filename);
 private:
     std::string m_backendUrl;
     EmployeeService& m_employeeService;
